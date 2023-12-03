@@ -35,14 +35,14 @@ int main() {
 
   // Envia mensagem ao servidor
   sendto(sockfd, message.c_str(), message.size(),
-        MSG_CONFIRM, (const struct sockaddr*) &servaddr,
+        MSG_CONFIRM, (struct sockaddr*) &servaddr,
         sizeof(servaddr));
 
   std::cout << "Mensagem enviada." << std::endl;
   
   // Recebe resposta do servidor
-  socklen_t len;
   int n;
+  socklen_t len;
   n = recvfrom(sockfd, (char*) buffer, MAXLINE,
               MSG_WAITALL, (struct sockaddr*) &servaddr,
               &len);

@@ -36,12 +36,9 @@ int main() {
     exit(EXIT_FAILURE);
   }
   
-  socklen_t len;
-  int n;
-  
-  len = sizeof(cliaddr);  //len is value/result
-  
   // Recebe mensagem do cliente
+  int n;
+  socklen_t len = sizeof(cliaddr);
   n = recvfrom(sockfd, (char*) buffer, MAXLINE,
               MSG_WAITALL, (struct sockaddr*) &cliaddr,
               &len);
