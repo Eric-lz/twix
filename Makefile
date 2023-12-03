@@ -7,10 +7,12 @@ DPLYFLAGS = -Wall -Werror -O2 -I $(INC_DIR)
 SRC_DIR := src
 OBJ_DIR := build
 
-# Server files
-_SERVER_O = server.o utils.o
-# Client files
-_CLIENT_O = client.o utils.o
+# Object files
+OBJ = data.o
+# Server specific object files
+_SERVER_O = $(OBJ) server.o
+# Client specific object files
+_CLIENT_O = $(OBJ) client.o
 
 SERVER_O = $(patsubst %,$(OBJ_DIR)/%,$(_SERVER_O))
 CLIENT_O = $(patsubst %,$(OBJ_DIR)/%,$(_CLIENT_O))
@@ -18,6 +20,10 @@ CLIENT_O = $(patsubst %,$(OBJ_DIR)/%,$(_CLIENT_O))
 # Build .cpp into .o (from src/ to build/)
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $< 
+
+# Build client and server
+all: client server
+	@echo "Debug build complete\n"
 
 # Build server target
 server: $(SERVER_O)
@@ -35,7 +41,7 @@ deploy_c: $(CLIENT_O)
 
 # Build client and server with optimizations
 deploy: deploy_s deploy_c
-	@echo "Build complete!\n"
+	@echo "Build complete\n"
 
 .PHONY: clean
 clean:
