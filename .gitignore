@@ -30,3 +30,10 @@
 *.exe
 *.out
 *.app
+
+# VS Code config folder
+.vscode
+
+# Executable files
+server
+client
