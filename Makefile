@@ -19,6 +19,7 @@ CLIENT_O = $(patsubst %,$(OBJ_DIR)/%,$(_CLIENT_O))
 
 # Build .cpp into .o (from src/ to build/)
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c -o $@ $< 
 
 # Build client and server
