@@ -45,20 +45,15 @@ int main() {
   
 while(true){
   // Recebe mensagem do cliente
-  // auto packet = std::make_unique<Packet>();
-  Packet* packet = nullptr;
+  std::unique_ptr<Packet> packet;
   packet = recebe(sockfd);
 
-  // std::string msg = packet->payload;
-
   // Imprime a mensagem recebida
-  // std::cout << "Mensagem recebida: " << msg << std::endl;
   cout << "seqn: " << packet->seqn << "\n";
   cout << "timestamp: " << packet->timestamp << "\n";
   cout << "length: " << packet->length << "\n";
   cout << "type: " << packet->type << "\n";
-  // cout << "payload: " << packet->payload << endl;
-  printf("payload: %s\n", packet->payload);
+  cout << "payload: " << packet->payload << endl;
 }
 
   close(sockfd);

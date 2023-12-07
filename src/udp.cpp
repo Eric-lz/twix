@@ -16,7 +16,7 @@ using std::shared_ptr;
 using std::make_unique;
 using std::move;
 
-int envia(int sockfd, Packet* packet){
+int envia(int sockfd, unique_ptr<Packet> packet){
   struct sockaddr_in servaddr{
     .sin_family      = AF_INET,
     .sin_port        = htons(PORT)
@@ -30,15 +30,13 @@ int envia(int sockfd, Packet* packet){
   }
 
   // Envia mensagem ao servidor
-  return sendto(sockfd, packet, sizeof(Packet),
+  return sendto(sockfd, packet.get(), sizeof(Packet),
         MSG_CONFIRM, (struct sockaddr*) &servaddr,
         sizeof(servaddr));
 }
 
 // Recebe resposta do servidor
-Packet* recebe(int sockfd){
-  // unique_ptr<Packet> packet;
-  // auto packet = std::make_unique<Packet>();
+unique_ptr<Packet> recebe(int sockfd){
   Packet* packet = new Packet;
   socklen_t len;
 
@@ -52,7 +50,5 @@ Packet* recebe(int sockfd){
               MSG_WAITALL, (struct sockaddr*) &servaddr,
               &len);
 
-  // auto packet = make_unique<Packet>(rawpacket);
-
-  return packet;
+  return make_unique<Packet>(*packet);
 }

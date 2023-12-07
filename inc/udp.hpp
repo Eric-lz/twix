@@ -12,8 +12,5 @@
 
 #define PORT 4000
 
-
-
-int envia(int sockfd, Packet* packet);
-Packet* recebe(int sockfd);
-// std::unique_ptr<Packet> recebe(int sockfd);
+int envia(int sockfd, std::unique_ptr<Packet> packet);
+std::unique_ptr<Packet> recebe(int sockfd);

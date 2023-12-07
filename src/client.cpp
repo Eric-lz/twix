@@ -34,14 +34,12 @@ while(true){
   std::cout << "Mensagem: ";
   std::cin >> message;
 
-  // auto packet = std::make_unique<Packet>();
-  Packet* packet = new Packet;
+  auto packet = std::make_unique<Packet>();
 
   packet->seqn = 111;
   packet->length = message.size();
   packet->timestamp = 123456;
   packet->type = 0;
-  // packet->payload = strdup(message.c_str());
   strncpy(packet->payload, message.c_str(), message.length()+1);
 
   cout << "seqn: " << packet->seqn << "\n";
@@ -51,8 +49,7 @@ while(true){
   cout << "payload: " << packet->payload << endl;
 
   // Envia packet
-  // int ret = envia(sockfd, std::move(packet));
-  int ret = envia(sockfd, packet);
+  int ret = envia(sockfd, std::move(packet));
 
   std::cout << "envia() = " << ret << std::endl;
 }
