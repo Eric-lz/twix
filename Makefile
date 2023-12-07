@@ -1,6 +1,6 @@
 INC_DIR = ./inc
 CXX = g++
-CXXFLAGS = -g -Wall -I $(INC_DIR)
+CXXFLAGS = -g -Wall -fsanitize=address -I $(INC_DIR)
 DPLYFLAGS = -Wall -Werror -O2 -I $(INC_DIR)
 
 # Source and Object files directory
@@ -8,7 +8,7 @@ SRC_DIR := src
 OBJ_DIR := build
 
 # Object files
-OBJ = data.o
+OBJ = data.o udp.o
 # Server specific object files
 _SERVER_O = $(OBJ) server.o
 # Client specific object files

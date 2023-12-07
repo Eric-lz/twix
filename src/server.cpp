@@ -1,20 +1,27 @@
-#include <bits/stdc++.h>
+// #include <bits/stdc++.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <string>
+#include <string.h>
+#include <iostream>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
+#include "udp.hpp"
+#include "data.hpp"
+
 #define PORT    4000
 #define MAXLINE 1024
+
+using std::cout;
+using std::endl;
 
 // Driver code
 int main() {
   int sockfd;
-  char buffer[MAXLINE];
-  struct sockaddr_in servaddr, cliaddr;
+  struct sockaddr_in servaddr; //, cliaddr;
   
   // Creating socket file descriptor
   if((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
@@ -22,8 +29,8 @@ int main() {
     exit(EXIT_FAILURE);
   }
   
-  memset(&servaddr, 0, sizeof(servaddr));
-  memset(&cliaddr, 0, sizeof(cliaddr));
+  // memset(&servaddr, 0, sizeof(servaddr));
+  // memset(&cliaddr, 0, sizeof(cliaddr));
 
   // Filling server information
   servaddr.sin_family       = AF_INET; // IPv4
@@ -36,25 +43,24 @@ int main() {
     exit(EXIT_FAILURE);
   }
   
+while(true){
   // Recebe mensagem do cliente
-  int n;
-  socklen_t len = sizeof(cliaddr);
-  n = recvfrom(sockfd, (char*) buffer, MAXLINE,
-              MSG_WAITALL, (struct sockaddr*) &cliaddr,
-              &len);
-  
-  // String deve terminar com null
-  buffer[n] = '\0';
+  // auto packet = std::make_unique<Packet>();
+  Packet* packet = nullptr;
+  packet = recebe(sockfd);
+
+  // std::string msg = packet->payload;
 
   // Imprime a mensagem recebida
-  std::cout << "Mensagem recebida: " << buffer << std::endl;
+  // std::cout << "Mensagem recebida: " << msg << std::endl;
+  cout << "seqn: " << packet->seqn << "\n";
+  cout << "timestamp: " << packet->timestamp << "\n";
+  cout << "length: " << packet->length << "\n";
+  cout << "type: " << packet->type << "\n";
+  // cout << "payload: " << packet->payload << endl;
+  printf("payload: %s\n", packet->payload);
+}
 
-  // Envia resposta ao cliente
-  std::string response = "Hello from server.";
-  sendto(sockfd, response.c_str(), response.size(),
-        MSG_CONFIRM, (struct sockaddr*) &cliaddr,
-        len);
-  std::cout << "Resposta enviada." << std::endl;
-
+  close(sockfd);
   return 0;
 }
