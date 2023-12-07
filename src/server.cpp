@@ -1,13 +1,11 @@
-// #include <bits/stdc++.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
-#include <iostream>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <iostream>
+#include <memory>
 
 #include "udp.hpp"
 #include "data.hpp"
@@ -28,9 +26,6 @@ int main() {
     perror("socket creation failed");
     exit(EXIT_FAILURE);
   }
-  
-  // memset(&servaddr, 0, sizeof(servaddr));
-  // memset(&cliaddr, 0, sizeof(cliaddr));
 
   // Filling server information
   servaddr.sin_family       = AF_INET; // IPv4
@@ -43,18 +38,18 @@ int main() {
     exit(EXIT_FAILURE);
   }
   
-while(true){
-  // Recebe mensagem do cliente
-  std::unique_ptr<Packet> packet;
-  packet = recebe(sockfd);
+  while(true){
+    // Recebe mensagem do cliente
+    std::unique_ptr<Packet> packet;
+    packet = recebe(sockfd);
 
-  // Imprime a mensagem recebida
-  cout << "seqn: " << packet->seqn << "\n";
-  cout << "timestamp: " << packet->timestamp << "\n";
-  cout << "length: " << packet->length << "\n";
-  cout << "type: " << packet->type << "\n";
-  cout << "payload: " << packet->payload << endl;
-}
+    // Imprime a mensagem recebida
+    cout << "seqn: " << packet->seqn << "\n";
+    cout << "timestamp: " << packet->timestamp << "\n";
+    cout << "length: " << packet->length << "\n";
+    cout << "type: " << packet->type << "\n";
+    cout << "payload: " << packet->payload << endl;
+  }
 
   close(sockfd);
   return 0;
