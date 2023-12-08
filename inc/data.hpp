@@ -8,16 +8,16 @@
 typedef struct packet_t{
   unsigned int seqn;      //Número de sequência
   unsigned int timestamp; //Timestamp do dado
-  int length;             //Comprimento do payload
   int type;               //Tipo do pacote (ex. DATA | CMD)
-  char payload[MAXLEN+1];      //Dados da mensagem
+  int length;             //Comprimento do payload
+  char payload[MAXLEN+1]; //Dados da mensagem
 } Packet;
 
 // (Sugestão) Estrutura de metadados das notificações
 typedef struct notification_t{
   unsigned int id;        // Identificador da notificação
   unsigned int timestamp; // Timestamp da notificação
-  int length;             // Tamanho da mensagem
   int pending;            // Quantidade de leitores pendentes
-  char message[MAXLEN+1];      //Dados da mensagem
+  int length;             // Tamanho da mensagem
+  char message[MAXLEN+1]; //Dados da mensagem
 } Notification;

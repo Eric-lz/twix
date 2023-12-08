@@ -22,8 +22,8 @@ int main() {
     // Imprime a mensagem recebida
     cout << "seqn: " << packet->seqn << "\n";
     cout << "timestamp: " << packet->timestamp << "\n";
-    cout << "length: " << packet->length << "\n";
     cout << "type: " << packet->type << "\n";
+    cout << "length: " << packet->length << "\n";
     cout << "payload: " << packet->payload << endl;
   }
 

@@ -8,7 +8,7 @@ SRC_DIR := src
 OBJ_DIR := build
 
 # Object files
-OBJ = data.o udp.o
+OBJ = udp.o
 # Server specific object files
 _SERVER_O = $(OBJ) server.o
 # Client specific object files
