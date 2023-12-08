@@ -18,7 +18,6 @@ private:
 
   // Server address structure
   struct sockaddr_in servaddr;
-  socklen_t servaddr_len;
 
   // Client address structure
   struct sockaddr_in cliaddr;
@@ -43,5 +42,6 @@ public:
   int envia(std::unique_ptr<Packet> packet);
 
   // Recebe packet do socket aberto
-  std::unique_ptr<Packet> recebe();
+  // (optional) inaddr: returns the address of the client
+  std::unique_ptr<Packet> recebe(struct sockaddr_in* inaddr = nullptr);
 };

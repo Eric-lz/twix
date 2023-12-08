@@ -55,13 +55,19 @@ int UDP::envia(unique_ptr<Packet> packet){
 }
 
 // Recebe packet do socket aberto
-unique_ptr<Packet> UDP::recebe(){
+unique_ptr<Packet> UDP::recebe(struct sockaddr_in* inaddr){
   Packet* packet = new Packet;
 
   recvfrom(sockfd, packet, sizeof(Packet), MSG_WAITALL,
           (struct sockaddr*) &cliaddr, &cliaddr_len);
 
   seqIn = packet->seqn;
+
+  if(inaddr != nullptr){
+    inaddr->sin_addr = cliaddr.sin_addr;
+    inaddr->sin_family = cliaddr.sin_family;
+    inaddr->sin_port = cliaddr.sin_port;
+  }
 
   return make_unique<Packet>(*packet);
 }
