@@ -8,9 +8,8 @@ using std::unique_ptr;
 using std::cout;
 using std::endl;
 
-// Driver code
 int main() {
-
+  // UDP object
   UDP udp;
   udp.openSocket();
   udp.bindSocket();
