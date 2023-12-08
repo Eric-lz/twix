@@ -1,12 +1,7 @@
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <cstring>
 #include <iostream>
 #include <memory>
+#include <cstring>
+#include <ctime>
 
 #include "udp.hpp"
 #include "data.hpp"
@@ -19,13 +14,9 @@ using std::endl;
 
 // Driver code
 int main() {
-  int sockfd;
-  
-  // Creating socket file descriptor
-  if((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
-    perror("socket creation failed");
-    exit(EXIT_FAILURE);
-  }
+  // UDP object
+  UDP udp;
+  udp.openSocket();
   
   while(true){
     // Leitura da mensagem a ser enviada
@@ -35,24 +26,16 @@ int main() {
 
     auto packet = std::make_unique<Packet>();
 
-    packet->seqn = 111;
     packet->length = message.size();
-    packet->timestamp = 123456;
-    packet->type = 0;
+    packet->timestamp = time(NULL);
+    packet->type = 5;
     strncpy(packet->payload, message.c_str(), message.length()+1);
 
-    cout << "seqn: " << packet->seqn << "\n";
-    cout << "timestamp: " << packet->timestamp << "\n";
-    cout << "length: " << packet->length << "\n";
-    cout << "type: " << packet->type << "\n";
-    cout << "payload: " << packet->payload << endl;
-
     // Envia packet
-    int ret = envia(sockfd, std::move(packet));
+    int ret = udp.envia(std::move(packet));
 
     std::cout << "envia() = " << ret << std::endl;
   }
 
-  close(sockfd);
   return 0;
 }

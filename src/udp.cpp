@@ -1,10 +1,5 @@
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
 #include <memory>
+#include <cstring>
 
 #include "data.hpp"
 #include "udp.hpp"
@@ -13,19 +8,47 @@ using std::unique_ptr;
 using std::shared_ptr;
 using std::make_unique;
 using std::move;
+using std::memset;
 
-int envia(int sockfd, unique_ptr<Packet> packet){
-  struct sockaddr_in servaddr{
-    .sin_family      = AF_INET,
-    .sin_port        = htons(PORT)
-  };
+UDP::UDP(){
+  memset(&servaddr, 0, sizeof(servaddr));
+  memset(&cliaddr, 0, sizeof(cliaddr));
+
+  servaddr.sin_family      = AF_INET;
+  servaddr.sin_port        = htons(PORT);
   servaddr.sin_addr.s_addr = INADDR_ANY;
 
-  // Creating socket file descriptor
+  seqIn = 0;
+  seqOut = 0;
+}
+
+UDP::~UDP(){
+  close(sockfd);
+}
+
+// Create socket file descriptor
+int UDP::openSocket(){
   if((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
     perror("socket creation failed");
-    return -2;
+    return -1;
   }
+  
+  return 0;
+}
+
+// (Server) Bind address to socket
+int UDP::bindSocket(){
+  if(bind(sockfd, (struct sockaddr*) &servaddr, sizeof(servaddr)) < 0){
+    perror("bind failed");
+    return -1;
+  }
+
+  return 0;
+}
+
+// Envia um packet para o socket aberto
+int UDP::envia(unique_ptr<Packet> packet){
+  packet->seqn = seqOut++;
 
   // Envia mensagem ao servidor
   return sendto(sockfd, packet.get(), sizeof(Packet),
@@ -33,20 +56,14 @@ int envia(int sockfd, unique_ptr<Packet> packet){
         sizeof(servaddr));
 }
 
-// Recebe resposta do servidor
-unique_ptr<Packet> recebe(int sockfd){
+// Recebe packet do socket aberto
+unique_ptr<Packet> UDP::recebe(){
   Packet* packet = new Packet;
-  socklen_t len;
 
-  struct sockaddr_in servaddr{
-    .sin_family      = AF_INET,
-    .sin_port        = htons(PORT)
-  };
-  servaddr.sin_addr.s_addr = INADDR_ANY;
+  recvfrom(sockfd, packet, sizeof(Packet), MSG_WAITALL,
+          (struct sockaddr*) &cliaddr, &cliaddr_len);
 
-  recvfrom(sockfd, packet, sizeof(Packet),
-              MSG_WAITALL, (struct sockaddr*) &servaddr,
-              &len);
+  seqIn = packet->seqn;
 
   return make_unique<Packet>(*packet);
 }
