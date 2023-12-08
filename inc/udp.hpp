@@ -30,11 +30,18 @@ private:
   int seqOut;
 
 public:
-  UDP();
-  ~UDP();
+  UDP();  // Inicializa estruturas
+  ~UDP(); // Fecha o socket
 
+  // Create socket file descriptor
   int openSocket();
+  
+  // (Server) Bind address to socket
   int bindSocket();
+
+  // Envia um packet para o socket aberto
   int envia(std::unique_ptr<Packet> packet);
+
+  // Recebe packet do socket aberto
   std::unique_ptr<Packet> recebe();
 };

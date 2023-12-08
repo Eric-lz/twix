@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 
+// Tamanho da mensagem do packet
 #define TAM 140
 
 // (Sugestão) Estrutura para troca de mensagens entre cliente e servidor

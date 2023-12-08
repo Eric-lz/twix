@@ -4,6 +4,7 @@
 #include "udp.hpp"
 #include "data.hpp"
 
+using std::unique_ptr;
 using std::cout;
 using std::endl;
 
@@ -16,7 +17,7 @@ int main() {
 
   while(true){
     // Recebe mensagem do cliente
-    std::unique_ptr<Packet> packet;
+    unique_ptr<Packet> packet;
     packet = udp.recebe();
 
     // Imprime a mensagem recebida

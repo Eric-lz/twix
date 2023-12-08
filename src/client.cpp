@@ -6,6 +6,9 @@
 #include "udp.hpp"
 #include "data.hpp"
 
+using std::make_unique;
+using std::string;
+using std::cin;
 using std::cout;
 using std::endl;
 
@@ -17,11 +20,11 @@ int main() {
   
   while(true){
     // Leitura da mensagem a ser enviada
-    std::string message;
-    std::cout << "Mensagem: ";
-    std::cin >> message;
+    string message;
+    cout << "Mensagem: ";
+    cin >> message;
 
-    auto packet = std::make_unique<Packet>();
+    auto packet = make_unique<Packet>();
 
     packet->length = message.size();
     packet->timestamp = time(NULL);
@@ -29,9 +32,9 @@ int main() {
     strncpy(packet->payload, message.c_str(), message.length()+1);
 
     // Envia packet
-    int ret = udp.envia(std::move(packet));
+    int ret = udp.envia(move(packet));
 
-    std::cout << "envia() = " << ret << std::endl;
+    cout << "envia() = " << ret << endl;
   }
 
   return 0;

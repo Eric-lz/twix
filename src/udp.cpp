@@ -5,7 +5,6 @@
 #include "udp.hpp"
 
 using std::unique_ptr;
-using std::shared_ptr;
 using std::make_unique;
 using std::move;
 using std::memset;
@@ -50,7 +49,6 @@ int UDP::bindSocket(){
 int UDP::envia(unique_ptr<Packet> packet){
   packet->seqn = seqOut++;
 
-  // Envia mensagem ao servidor
   return sendto(sockfd, packet.get(), sizeof(Packet),
         MSG_CONFIRM, (struct sockaddr*) &servaddr,
         sizeof(servaddr));
