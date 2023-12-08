@@ -1,9 +1,11 @@
 #include <memory>
+#include <string>
 #include <cstring>
 
 #include "data.hpp"
 #include "udp.hpp"
 
+using std::string;
 using std::unique_ptr;
 using std::make_unique;
 using std::move;
@@ -70,4 +72,24 @@ unique_ptr<Packet> UDP::recebe(struct sockaddr_in* inaddr){
   }
 
   return make_unique<Packet>(*packet);
+}
+
+// Envia um packet de login com o perfil do usuario
+int UDP::login(const string profile){
+  auto packet = make_unique<Packet>();
+
+  // Monta pacote de login
+  packet->timestamp = time(NULL);
+  packet->type = LOGIN;
+  strncpy(packet->payload, profile.c_str(), 20);
+  packet->length = strnlen(packet->payload, 20);
+
+  // Envia pacote
+  return envia(move(packet));
+}
+
+void UDP::ping(){
+  auto packet = make_unique<Packet>();
+  strncpy(packet->payload, "ping", 5);
+  envia(move(packet));
 }
