@@ -24,7 +24,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 # Build client and server
 all: client server
-	@echo "Debug build complete\n"
+	@echo "Debug build complete"
 
 # Build server target
 server: $(SERVER_O)
@@ -42,7 +42,7 @@ deploy_c: $(CLIENT_O)
 
 # Build client and server with optimizations
 deploy: deploy_s deploy_c
-	@echo "Build complete\n"
+	@echo "Build complete"
 
 .PHONY: clean
 clean:

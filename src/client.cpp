@@ -25,10 +25,10 @@ int main() {
 
     auto packet = make_unique<Packet>();
 
-    packet->length = message.size();
     packet->timestamp = time(NULL);
     packet->type = 5;
-    strncpy(packet->payload, message.c_str(), message.length()+1);
+    strncpy(packet->payload, message.c_str(), MAXLEN);
+    packet->length = strnlen(packet->payload, MAXLEN);
 
     // Envia packet
     int ret = udp.envia(move(packet));
