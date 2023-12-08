@@ -6,9 +6,6 @@
 #include "udp.hpp"
 #include "data.hpp"
 
-#define PORT    4000
-#define MAXLINE 1024
-
 using std::cout;
 using std::endl;
 
