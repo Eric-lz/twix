@@ -5,15 +5,11 @@
 
 #include "data.hpp"
 
-using std::pair;
-using std::list;
-using std::string;
-
 // Estrutura para armazenar os perfis
 typedef struct profile_t{
-  string profile;
-  list<int> port;
-  list<string> follow;
-  list<Notification> notif;
-  list<pair<string, int>> pending_notif;
+  in_port_t port;
+  std::string profile;
+  std::list<std::string> follow;
+  std::list<Notification> notif;
+  std::list<std::pair<std::string, int>> pending_notif;
 } Profile;

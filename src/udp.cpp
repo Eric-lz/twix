@@ -90,6 +90,8 @@ int UDP::login(const string profile){
 
 void UDP::ping(){
   auto packet = make_unique<Packet>();
+  packet->timestamp = time(NULL);
+  packet->type = PING;
   strncpy(packet->payload, "ping", 5);
   envia(move(packet));
 }

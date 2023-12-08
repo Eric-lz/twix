@@ -35,6 +35,8 @@ int main() {
   profile.insert(profile.begin(), '@');
 
   // Envia um pacote vazio ao servidor
+  // (endereco do cliente só atualiza no servidor após o segundo packet)
+  // (não sei resolver kk )
   udp.ping();
 
   // Tentativa de login
