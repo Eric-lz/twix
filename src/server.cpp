@@ -51,8 +51,7 @@ int main() {
       // Procura o perfil que enviou a mensagem
       for(unsigned long i = 0; i < data.size(); i++){
         if(data.at(i).port == cliaddr.sin_port){
-          // Adiciona perfil a lista de seguidos
-          data.at(i).follow.push_back(packet->payload);
+          data.at(i).follow.insert(packet->payload);
           cout << data.at(i).profile << " now follows ";
           cout << packet->payload << endl;
         }

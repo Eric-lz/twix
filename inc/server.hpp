@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <set>
 #include <string>
 
 // (Sugestão) Estrutura de metadados das notificações
@@ -15,7 +16,7 @@ typedef struct notification_t{
 typedef struct profile_t{
   in_port_t port;
   std::string profile;
-  std::vector<std::string> follow;
+  std::set<std::string> follow;
   std::vector<Notification> notif;
   std::vector<std::pair<std::string, int>> pending_notif;
 } Profile;
