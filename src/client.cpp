@@ -59,6 +59,7 @@ int main() {
     string input, cmd, arg;
     getline(cin, input);
 
+    // Separa a entrada em comando e argumento
     size_t it = input.find(' ');
     if(it != string::npos){
       cmd = input.substr(0, it);
@@ -66,37 +67,16 @@ int main() {
     }
     else cmd = input;
 
-    auto packet = make_unique<Packet>();
-    int ret;
-
+    // Converte entrada para Enum
+    // (necessario para usar no switch)
     PacketType command;
     command = cmdToEnum(cmd);
+
     switch(command){
     case SEND:
-      packet->timestamp = time(NULL);
-      packet->type = SEND;
-      strncpy(packet->payload, arg.c_str(), MAXLEN);
-      packet->length = strnlen(packet->payload, MAXLEN);
-      ret = udp.envia(move(packet));
-      cout << "envia() = " << ret << endl;
-      break;
-
     case FOLLOW:
-      packet->timestamp = time(NULL);
-      packet->type = FOLLOW;
-      strncpy(packet->payload, arg.c_str(), MAXLEN);
-      packet->length = strnlen(packet->payload, MAXLEN);
-      ret = udp.envia(move(packet));
-      cout << "follow" << endl;
-      break;
-
     case UNFOLLOW:
-      packet->timestamp = time(NULL);
-      packet->type = UNFOLLOW;
-      strncpy(packet->payload, arg.c_str(), MAXLEN);
-      packet->length = strnlen(packet->payload, MAXLEN);
-      ret = udp.envia(move(packet));
-      cout << "unfollow" << endl;
+      envia(udp, command, arg);
       break;
     
     case QUIT:
@@ -108,7 +88,6 @@ int main() {
       cout << "Comando inválido" << endl;
       break;
     }
-
   }
 
   return 0;
@@ -130,4 +109,19 @@ PacketType cmdToEnum(string cmd){
     return QUIT;
 
   return UNKNOWN;
+}
+
+// Envia um pacote via UDP de tipo TYPE com mensagem PAYLOAD
+int envia(UDP& udp, PacketType type, string payload){
+  // Cria novo packet
+  auto packet = make_unique<Packet>();
+
+  // Preenche os campos do packet
+  packet->timestamp = time(NULL);
+  packet->type = type;
+  strncpy(packet->payload, payload.c_str(), MAXLEN);
+  packet->length = strnlen(packet->payload, MAXLEN);
+
+  // Envia o pacote
+  return udp.envia(move(packet));
 }
