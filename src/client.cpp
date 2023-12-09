@@ -25,18 +25,18 @@ int main() {
   cout << "Bem-vindo ao Twix\n";
   
   // Leitura do nome do perfil
-  string profile;
-  while(profile.empty()){
+  string name;
+  while(name.empty()){
     cout << "Digite seu perfil: @";
-    cin >> profile;
+    cin >> name;
     cin.ignore();
-    if(profile.size() < 4 || profile.size() > 20){
+    if(name.size() < 4 || name.size() > 20){
       cout << "Nome do perfil deve ter 4 a 20 caracteres\n";
-      profile.clear();
+      name.clear();
     }
   }
   // Insere '@' no inicio do perfil
-  profile.insert(profile.begin(), '@');
+  name.insert(name.begin(), '@');
 
   // Envia um pacote vazio ao servidor
   // (endereco do cliente só atualiza no servidor após o segundo packet)
@@ -44,13 +44,13 @@ int main() {
   udp.ping();
 
   // Tentativa de login
-  if(udp.login(profile) < 0){
+  if(udp.login(name) < 0){
     perror("login failed");
     exit(EXIT_FAILURE);
   }
 
   cout << "\033[2J\033[1;1H"; //clear screen
-  cout << "Logado como " << profile << '\n';
+  cout << "Logado como " << name << '\n';
   cout << "Comandos: SEND msg | FOLLOW profile | UNFOLLOW profile" << endl;
   
   while(true){
@@ -76,8 +76,7 @@ int main() {
     case SEND:
     case FOLLOW:
     case UNFOLLOW:
-      if(envia(udp, command, arg) < 0)
-        cout << "Erro ao enviar comando" << endl;
+      envia(udp, command, arg);
       break;
     
     case QUIT:
@@ -115,7 +114,10 @@ PacketType cmdToEnum(string cmd){
 // Envia um pacote via UDP de tipo TYPE com mensagem PAYLOAD
 int envia(UDP& udp, PacketType type, string payload){
   // Se payload for vazio, nao envia
-  if(payload.empty()) return -1;
+  if(payload.empty()){
+    cout << "Comando sem argumento" << endl;
+    return -1;
+  }
 
   // Cria novo packet
   auto packet = make_unique<Packet>();

@@ -70,7 +70,7 @@ public:
   std::unique_ptr<Packet> recebe(struct sockaddr_in* inaddr = nullptr);
 
   // Envia um packet de login com o perfil do usuario
-  int login(const std::string profile);
+  int login(const std::string name);
 
   // Envia um pacote vazio
   void ping();

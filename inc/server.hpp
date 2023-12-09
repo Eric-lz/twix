@@ -1,9 +1,10 @@
 #pragma once
 #include <vector>
+#include <map>
 #include <set>
 #include <string>
 
-// (Sugestão) Estrutura de metadados das notificações
+// Estrutura de metadados das notificações
 typedef struct notification_t{
   unsigned int id;        // Identificador da notificação
   unsigned int timestamp; // Timestamp da notificação
@@ -14,8 +15,7 @@ typedef struct notification_t{
 
 // Estrutura para armazenar os perfis
 typedef struct profile_t{
-  in_port_t port;
-  std::string profile;
+  std::string name;
   std::set<std::string> follow;
   std::vector<Notification> notif;
   std::vector<std::pair<std::string, int>> pending_notif;
@@ -23,7 +23,7 @@ typedef struct profile_t{
 
 // Busca o client pela porta e retorna seu indice
 // Retorna -1 se nao encontra
-int findPort(std::vector<Profile>& data, in_port_t port);
+int findPort(std::map<in_port_t, int>& clients, in_port_t port);
 
 // Adiciona um perfil na lista de seguidos
 void addFollow(Profile& perfil, std::string follow);

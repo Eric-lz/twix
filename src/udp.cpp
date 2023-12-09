@@ -74,13 +74,13 @@ unique_ptr<Packet> UDP::recebe(struct sockaddr_in* inaddr){
 }
 
 // Envia um packet de login com o perfil do usuario
-int UDP::login(const string profile){
+int UDP::login(const string name){
   auto packet = make_unique<Packet>();
 
   // Monta pacote de login
   packet->timestamp = time(NULL);
   packet->type = LOGIN;
-  strncpy(packet->payload, profile.c_str(), 20);
+  strncpy(packet->payload, name.c_str(), 20);
   packet->length = strnlen(packet->payload, 20);
 
   // Envia pacote
