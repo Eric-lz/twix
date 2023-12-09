@@ -35,7 +35,6 @@ int main() {
 
     // Perfil que esta mandando pacotes
     Profile p;
-    // int i;
 
     switch(packet->type){
     case PING:
@@ -46,12 +45,20 @@ int main() {
       p.port = cliaddr.sin_port;
       p.profile = packet->payload;
       data.push_back(p);
-      cout << "login: " << p.profile << "\n";
-      cout << "port: " << p.port << endl;
+      cout << "login: " << p.profile;
+      cout << " in port: " << p.port << endl;
       break;
 
     case FOLLOW:
-      cout << "FOLLOW" << endl;
+      // Procura o perfil que enviou a mensagem
+      for(unsigned long i = 0; i < data.size(); i++){
+        if(data.at(i).port == cliaddr.sin_port){
+          // Adiciona perfil a lista de seguidos
+          data.at(i).follow.push_back(packet->payload);
+          cout << data.at(i).profile << " now follows ";
+          cout << packet->payload << endl;
+        }
+      }
       break;
 
     case UNFOLLOW:
