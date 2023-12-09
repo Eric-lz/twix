@@ -76,7 +76,8 @@ int main() {
     case SEND:
     case FOLLOW:
     case UNFOLLOW:
-      envia(udp, command, arg);
+      if(envia(udp, command, arg) < 0)
+        cout << "Erro ao enviar comando" << endl;
       break;
     
     case QUIT:
@@ -113,8 +114,16 @@ PacketType cmdToEnum(string cmd){
 
 // Envia um pacote via UDP de tipo TYPE com mensagem PAYLOAD
 int envia(UDP& udp, PacketType type, string payload){
+  // Se payload for vazio, nao envia
+  if(payload.empty()) return -1;
+
   // Cria novo packet
   auto packet = make_unique<Packet>();
+
+  // Se for FOLLOW ou UNFOLLOW e nao tiver @, adiciona
+  if(type == FOLLOW || type == UNFOLLOW)
+    if(payload.at(0) != '@')
+      payload.insert(0, 1, '@');
 
   // Preenche os campos do packet
   packet->timestamp = time(NULL);
