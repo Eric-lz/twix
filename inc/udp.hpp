@@ -6,11 +6,35 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <memory>
+#include <string>
 
-#include "data.hpp"
-
+// Porta da aplicacao
 #define PORT 4000
 
+// Tamanho da mensagem do packet
+#define MAXLEN 140
+
+// Tipo do pacote (ex. DATA, CMD)
+enum PacketType{
+  PING,
+  LOGIN,
+  FOLLOW,
+  UNFOLLOW,
+  SEND,
+  QUIT,
+  UNKNOWN
+};
+
+// (Sugestão) Estrutura para troca de mensagens entre cliente e servidor
+typedef struct packet_t{
+  unsigned int seqn;      //Número de sequência
+  unsigned int timestamp; //Timestamp do dado
+  PacketType type;        //Tipo do pacote (ex. DATA | CMD)
+  int length;             //Comprimento do payload
+  char payload[MAXLEN+1]; //Dados da mensagem
+} Packet;
+
+// Abstrai criacao de socket e envio de pacotes
 class UDP{
 private:
   // Socket file descriptor

@@ -2,7 +2,6 @@
 #include <string>
 #include <cstring>
 
-#include "data.hpp"
 #include "udp.hpp"
 
 using std::string;

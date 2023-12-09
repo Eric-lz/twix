@@ -4,7 +4,6 @@
 #include <algorithm>
 
 #include "udp.hpp"
-#include "data.hpp"
 #include "server.hpp"
 
 using std::unique_ptr;

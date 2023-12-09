@@ -5,7 +5,6 @@
 
 #include "client.hpp"
 #include "udp.hpp"
-#include "data.hpp"
 
 using std::make_unique;
 using std::string;
