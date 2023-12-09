@@ -20,3 +20,13 @@ typedef struct profile_t{
   std::vector<Notification> notif;
   std::vector<std::pair<std::string, int>> pending_notif;
 } Profile;
+
+// Busca o client pela porta e retorna seu indice
+// Retorna -1 se nao encontra
+int findPort(std::vector<Profile>& data, in_port_t port);
+
+// Adiciona um perfil na lista de seguidos
+void addFollow(Profile& perfil, std::string follow);
+
+// Remove um perfil da lista de seguidos
+void unFollow(Profile& perfil, std::string follow);

@@ -33,6 +33,7 @@ int main() {
 
     // Perfil que esta mandando pacotes
     Profile p;
+    int index;
 
     switch(packet->type){
     case PING:
@@ -49,27 +50,24 @@ int main() {
 
     case FOLLOW:
       // Procura o perfil que enviou a mensagem
-      for(unsigned long i = 0; i < data.size(); i++){
-        if(data.at(i).port == cliaddr.sin_port){
-          data.at(i).follow.insert(packet->payload);
-          cout << data.at(i).profile << " now follows ";
-          cout << packet->payload << endl;
-        }
-      }
+      index = findPort(data, cliaddr.sin_port);
+      // Adiciona seguidor
+      addFollow(data.at(index), packet->payload);
       break;
 
     case UNFOLLOW:
-      cout << "UNFOLLOW" << endl;
+      // Procura o perfil que enviou a mensagem
+      index = findPort(data, cliaddr.sin_port);
+      // Remove seguidor
+      unFollow(data.at(index), packet->payload);
       break;
 
     case SEND:
       // Procura o perfil que enviou a mensagem
-      for(unsigned long i = 0; i < data.size(); i++){
-        if(data.at(i).port == cliaddr.sin_port){
-          cout << data.at(i).profile << ": ";
-          cout << packet->payload << endl;
-        }
-      }
+      index = findPort(data, cliaddr.sin_port);
+      // Imprime a mensagem no console
+      cout << data.at(index).profile << ": ";
+      cout << packet->payload << endl;
       break;
 
     default:
@@ -79,4 +77,40 @@ int main() {
   }
 
   return 0;
+}
+
+// Busca o client pela porta e retorna seu indice
+// Retorna -1 se nao encontra
+int findPort(vector<Profile>& data, in_port_t port){
+  unsigned long i = 0;
+  // Procura o perfil que enviou a mensagem
+  for(auto p : data){
+    if(p.port == port)
+      return i;
+
+    i++;
+  }
+
+  return -1;
+}
+
+void addFollow(Profile& perfil, string follow){
+  perfil.follow.insert(follow);
+  cout << perfil.profile << " now follows ";
+  cout << follow << endl;
+}
+
+void unFollow(Profile& perfil, string follow){
+  auto it = perfil.follow.find(follow);
+
+  // Se encontrar seguidor, remove da lista
+  if(it != perfil.follow.end()){
+    perfil.follow.erase(it);
+    cout << perfil.profile << " no longer follows ";
+    cout << follow << endl;
+  }
+  else{
+    cout << perfil.profile << " does not follow ";
+    cout << follow << endl;
+  }
 }
