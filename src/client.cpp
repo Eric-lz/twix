@@ -6,6 +6,7 @@
 #include "client.hpp"
 #include "udp.hpp"
 
+using std::unique_ptr;
 using std::make_unique;
 using std::move;
 using std::string;
@@ -52,6 +53,8 @@ int main() {
   cout << "\033[2J\033[1;1H"; //clear screen
   cout << "Logado como " << name << '\n';
   cout << "Comandos: SEND msg | FOLLOW profile | UNFOLLOW profile" << endl;
+
+  
   
   while(true){
     // Leitura da mensagem a ser enviada
@@ -72,13 +75,21 @@ int main() {
     PacketType command;
     command = cmdToEnum(cmd);
 
+    // Recebe mensagem do cliente
+    unique_ptr<Packet> packet;
+
     switch(command){
     case SEND:
+      envia(udp, command, arg);
+      packet = udp.recebe();
+      cout << packet->payload << endl;
+      break;
+
     case FOLLOW:
     case UNFOLLOW:
       envia(udp, command, arg);
       break;
-    
+
     case QUIT:
       cout << "quit" << endl;
       exit(0);

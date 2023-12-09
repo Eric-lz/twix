@@ -36,7 +36,7 @@ int main() {
 
     // Perfil que esta mandando pacotes
     Profile p;
-    int index;
+    int p_index;
 
     switch(packet->type){
     case PING:
@@ -46,9 +46,9 @@ int main() {
     case LOGIN:
       // Nome do perfil
       p.name = packet->payload;
-      index = profiles.size();
+      p_index = profiles.size();
       profiles.push_back(p);
-      clients.insert({cliaddr.sin_port, index});
+      clients.insert({cliaddr.sin_port, p_index});
 
       cout << "login: " << p.name;
       cout << " in port: " << cliaddr.sin_port << endl;
@@ -56,24 +56,27 @@ int main() {
 
     case FOLLOW:
       // Procura o perfil que enviou a mensagem
-      index = findPort(clients, cliaddr.sin_port);
+      p_index = findPort(clients, cliaddr.sin_port);
       // Adiciona seguidor
-      addFollow(profiles.at(index), packet->payload);
+      addFollow(profiles.at(p_index), packet->payload);
       break;
 
     case UNFOLLOW:
       // Procura o perfil que enviou a mensagem
-      index = findPort(clients, cliaddr.sin_port);
+      p_index = findPort(clients, cliaddr.sin_port);
       // Remove seguidor
-      unFollow(profiles.at(index), packet->payload);
+      unFollow(profiles.at(p_index), packet->payload);
       break;
 
     case SEND:
       // Procura o perfil que enviou a mensagem
-      index = findPort(clients, cliaddr.sin_port);
+      p_index = findPort(clients, cliaddr.sin_port);
       // Imprime a mensagem no console
-      cout << profiles.at(index).name << ": ";
+      cout << profiles.at(p_index).name << ": ";
       cout << packet->payload << endl;
+      // Envia resposta ao cliente
+      strncpy(packet->payload, profiles.at(p_index).name.c_str(), MAXLEN);
+      udp.envia(move(packet), &cliaddr);
       break;
 
     default:

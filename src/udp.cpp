@@ -47,12 +47,26 @@ int UDP::bindSocket(){
 }
 
 // Envia um packet para o socket aberto
-int UDP::envia(unique_ptr<Packet> packet){
+int UDP::envia(unique_ptr<Packet> packet, struct sockaddr_in* outaddr){
   packet->seqn = seqOut++;
+  struct sockaddr_in addr;
+
+  // Se for indicado um enderco, enviar pacote para ele
+  if(outaddr != nullptr){
+    addr.sin_addr = outaddr->sin_addr;
+    addr.sin_family = outaddr->sin_family;
+    addr.sin_port = outaddr->sin_port;
+  }
+  // Se nao, usa o endereco do servidor como padrao
+  else{
+    addr.sin_addr = servaddr.sin_addr;
+    addr.sin_family = servaddr.sin_family;
+    addr.sin_port = servaddr.sin_port;
+  }
 
   return sendto(sockfd, packet.get(), sizeof(Packet),
-        MSG_CONFIRM, (struct sockaddr*) &servaddr,
-        sizeof(servaddr));
+        MSG_CONFIRM, (struct sockaddr*) &addr,
+        sizeof(addr));
 }
 
 // Recebe packet do socket aberto
