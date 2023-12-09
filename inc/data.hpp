@@ -10,7 +10,9 @@ enum PacketType{
   LOGIN,
   FOLLOW,
   UNFOLLOW,
-  SEND
+  SEND,
+  QUIT,
+  UNKNOWN
 };
 
 // (Sugestão) Estrutura para troca de mensagens entre cliente e servidor
