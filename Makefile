@@ -44,6 +44,10 @@ deploy_c: $(CLIENT_O)
 deploy: deploy_s deploy_c
 	@echo "Build complete"
 
+# Build debug client and server, and run server
+test: clean all
+	./server
+
 .PHONY: clean
 clean:
 	rm -f server client $(OBJ_DIR)/*.o
