@@ -22,61 +22,43 @@ int main() {
   udp.bindSocket();
 
   // Server memory
-  vector<Profile> profiles;
-  map<in_port_t, int> clients;
+  ProfilesList profiles;
 
   while(true){
     // Endereco do cliente que enviou a mensagem
     struct sockaddr_in cliaddr;
     memset(&cliaddr, 0, sizeof(cliaddr));
 
-    // Recebe mensagem do cliente
+    // Recebe pacote do cliente
     unique_ptr<Packet> packet;
     packet = udp.recebe(&cliaddr);
 
-    // Perfil que esta mandando pacotes
-    Profile p;
-    int p_index;
-
+    // Ação do servidor baseada no tipo de packet recebido
     switch(packet->type){
-    case PING:
-      // cout << "ping" << endl;
+    case PING: // useless
+      cout << "ping from " << cliaddr.sin_port << endl;
       break;
 
     case LOGIN:
-      // Nome do perfil
-      p.name = packet->payload;
-      p_index = profiles.size();
-      profiles.push_back(p);
-      clients.insert({cliaddr.sin_port, p_index});
-
-      cout << "login: " << p.name;
-      cout << " in port: " << cliaddr.sin_port << endl;
+      // Login
+      profiles.login(packet->payload);
+      cout << "login: " << packet->payload;
+      cout << " in port " << cliaddr.sin_port << endl;
       break;
 
     case FOLLOW:
-      // Procura o perfil que enviou a mensagem
-      p_index = findPort(clients, cliaddr.sin_port);
       // Adiciona seguidor
-      addFollow(profiles.at(p_index), packet->payload);
+      profiles.addFollow(packet->profile, packet->payload);
       break;
 
     case UNFOLLOW:
-      // Procura o perfil que enviou a mensagem
-      p_index = findPort(clients, cliaddr.sin_port);
       // Remove seguidor
-      unFollow(profiles.at(p_index), packet->payload);
+      profiles.unFollow(packet->profile, packet->payload);
       break;
 
     case SEND:
-      // Procura o perfil que enviou a mensagem
-      p_index = findPort(clients, cliaddr.sin_port);
-      // Imprime a mensagem no console
-      cout << profiles.at(p_index).name << ": ";
-      cout << packet->payload << endl;
-      // Envia resposta ao cliente
-      strncpy(packet->payload, profiles.at(p_index).name.c_str(), MAXLEN);
-      udp.envia(move(packet), &cliaddr);
+      // Recebe mensagem do client 
+      profiles.recebeMensagem(move(packet));
       break;
 
     default:
@@ -97,23 +79,50 @@ int findPort(map<in_port_t, int>& clients, in_port_t port){
   return -1;
 }
 
-void addFollow(Profile& perfil, string follow){
-  perfil.follow.insert(follow);
-  cout << perfil.name << " now follows ";
-  cout << follow << endl;
+int ProfilesList::getProfileByName(string name){
+  for(int i = 0; auto p : profiles){
+    if(p.name == name)
+      return i;
+  }
+  
+  return -1;
 }
 
-void unFollow(Profile& perfil, string follow){
-  auto it = perfil.follow.find(follow);
+void ProfilesList::login(string profile){
+  // Se o perfil não existe na lista, cria
+  if(getProfileByName(profile) < 0){
+    Profile p;
+    p.name = profile;
+    profiles.push_back(p);
+  }
+}
 
+void ProfilesList::addFollow(string follower, string following){
+  int i = getProfileByName(follower);
+  profiles.at(i).follow.insert(following);
+  cout << follower << " now follows ";
+  cout << following << endl;
+}
+
+void ProfilesList::unFollow(string follower, string following){
   // Se encontrar seguidor, remove da lista
-  if(it != perfil.follow.end()){
-    perfil.follow.erase(it);
-    cout << perfil.name << " no longer follows ";
-    cout << follow << endl;
-  }
-  else{
-    cout << perfil.name << " does not follow ";
-    cout << follow << endl;
-  }
+  int i = getProfileByName(follower);
+  profiles.at(i).follow.erase(following);
+  cout << follower << " no longer follows ";
+  cout << following << endl;
+
+}
+
+void ProfilesList::recebeMensagem(unique_ptr<Packet> packet){
+  // Adiciona na lista de notificações recebidas
+  Notification notif;
+  notif.id = notif_id++;
+  notif.timestamp = packet->timestamp;
+  notif.length = packet->length;
+  notif.pending = profiles.at(getProfileByName(packet->profile)).follow.size();
+  strncpy(notif.message, packet->payload, MAXLEN);
+
+  // Imprime a mensagem no console
+  cout << packet->profile << ": ";
+  cout << packet->payload << endl;
 }

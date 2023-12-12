@@ -63,6 +63,7 @@ int UDP::envia(unique_ptr<Packet> packet, struct sockaddr_in* outaddr){
     addr.sin_family = servaddr.sin_family;
     addr.sin_port = servaddr.sin_port;
   }
+  strncpy(packet->profile, name.c_str(), 20);
 
   return sendto(sockfd, packet.get(), sizeof(Packet),
         MSG_CONFIRM, (struct sockaddr*) &addr,
@@ -90,6 +91,7 @@ unique_ptr<Packet> UDP::recebe(struct sockaddr_in* inaddr){
 // Envia um packet de login com o perfil do usuario
 int UDP::login(const string name){
   auto packet = make_unique<Packet>();
+  this->name = name;
 
   // Monta pacote de login
   packet->timestamp = time(NULL);

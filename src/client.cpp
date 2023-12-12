@@ -39,11 +39,6 @@ int main() {
   // Insere '@' no inicio do perfil
   name.insert(name.begin(), '@');
 
-  // Envia um pacote vazio ao servidor
-  // (endereco do cliente só atualiza no servidor após o segundo packet)
-  // (não sei resolver kk )
-  udp.ping();
-
   // Tentativa de login
   if(udp.login(name) < 0){
     perror("login failed");
@@ -53,8 +48,6 @@ int main() {
   cout << "\033[2J\033[1;1H"; //clear screen
   cout << "Logado como " << name << '\n';
   cout << "Comandos: SEND msg | FOLLOW profile | UNFOLLOW profile" << endl;
-
-  
   
   while(true){
     // Leitura da mensagem a ser enviada
@@ -80,11 +73,6 @@ int main() {
 
     switch(command){
     case SEND:
-      envia(udp, command, arg);
-      packet = udp.recebe();
-      cout << packet->payload << endl;
-      break;
-
     case FOLLOW:
     case UNFOLLOW:
       envia(udp, command, arg);

@@ -31,6 +31,7 @@ typedef struct packet_t{
   unsigned int timestamp; //Timestamp do dado
   PacketType type;        //Tipo do pacote (ex. DATA | CMD)
   int length;             //Comprimento do payload
+  char profile[21];       //Perfil que enviou o pacote
   char payload[MAXLEN+1]; //Dados da mensagem
 } Packet;
 
@@ -39,6 +40,8 @@ class UDP{
 private:
   // Socket file descriptor
   int sockfd;
+  // Profile name
+  std::string name = "server";
 
   // Server address structure
   struct sockaddr_in servaddr;
