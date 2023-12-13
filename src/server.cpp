@@ -2,6 +2,7 @@
 #include <memory>
 #include <cstring>
 #include <algorithm>
+#include <ctime>
 
 #include "udp.hpp"
 #include "server.hpp"
@@ -24,6 +25,9 @@ int main() {
   // Server memory
   ProfilesList profiles;
 
+  // Perfil - Porta
+  map<string, sockaddr_in> clients;
+
   while(true){
     // Endereco do cliente que enviou a mensagem
     struct sockaddr_in cliaddr;
@@ -42,8 +46,9 @@ int main() {
     case LOGIN:
       // Login
       profiles.login(packet->payload);
+      clients[packet->payload] = cliaddr;
       cout << "login: " << packet->payload;
-      cout << " in port " << cliaddr.sin_port << endl;
+      cout << " in port " << clients[packet->payload].sin_port << endl;
       break;
 
     case FOLLOW:
@@ -100,6 +105,7 @@ void ProfilesList::login(string profile){
 void ProfilesList::addFollow(string follower, string following){
   int i = getProfileByName(follower);
   profiles.at(i).follow.insert(following);
+
   cout << follower << " now follows ";
   cout << following << endl;
 }
@@ -108,21 +114,28 @@ void ProfilesList::unFollow(string follower, string following){
   // Se encontrar seguidor, remove da lista
   int i = getProfileByName(follower);
   profiles.at(i).follow.erase(following);
+
   cout << follower << " no longer follows ";
   cout << following << endl;
-
 }
 
 void ProfilesList::recebeMensagem(unique_ptr<Packet> packet){
+  // Indice do perfil que enviou a mensagem
+  auto perfil = profiles.at(getProfileByName(packet->profile));
+
   // Adiciona na lista de notificações recebidas
   Notification notif;
   notif.id = notif_id++;
   notif.timestamp = packet->timestamp;
   notif.length = packet->length;
-  notif.pending = profiles.at(getProfileByName(packet->profile)).follow.size();
+  notif.pending = perfil.follow.size();
   strncpy(notif.message, packet->payload, MAXLEN);
+  notifications.push_back(notif);
+  
+  // Adiciona na lista de notificações pendentes
+  for(string follower : perfil.follow)
+    pending_notifs.insert(pair<string, unsigned> (follower, notif.id));
 
-  // Imprime a mensagem no console
   cout << packet->profile << ": ";
   cout << packet->payload << endl;
 }

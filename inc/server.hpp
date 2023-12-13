@@ -17,8 +17,6 @@ typedef struct notification_t{
 typedef struct profile_t{
   std::string name;
   std::set<std::string> follow;
-  std::vector<Notification> notif;
-  std::vector<std::pair<std::string, int>> pending_notif;
 } Profile;
 
 class ProfilesList{
@@ -26,6 +24,7 @@ private:
   // list of profiles
   std::vector<Profile> profiles;
   std::vector<Notification> notifications;
+  std::multimap<std::string, unsigned> pending_notifs;
   unsigned int notif_id = 0;
 
   // Procura perfil pelo nome e retorna seu indice
