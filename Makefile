@@ -1,7 +1,7 @@
 INC_DIR = ./inc
 CXX = g++
-CXXFLAGS = -g -Wall -fsanitize=address -std=c++2a -I $(INC_DIR)
-DPLYFLAGS = -Wall -Werror -O2 -std=c++2a -I $(INC_DIR)
+CXXFLAGS = -g -Wall -fsanitize=address -std=c++2a -pthread -I $(INC_DIR)
+DPLYFLAGS = -Wall -Werror -O2 -std=c++2a -pthread -I $(INC_DIR)
 
 # Source and Object files directory
 SRC_DIR := src

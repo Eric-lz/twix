@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 #include <memory>
 #include <cstring>
 #include <algorithm>
@@ -11,6 +12,7 @@
 #include "profiles.hpp"
 #include "notifications.hpp"
 
+using std::thread;
 using std::unique_ptr;
 using std::pair;
 using std::map;
@@ -22,18 +24,28 @@ using std::cout;
 using std::endl;
 
 int main() {
+
+  // Server memory
+  // Instances
+  Instances* instances = new Instances;
+  // Profiles
+  Profiles* profiles = new Profiles;
+  // Notifications
+  Notifications* notifications = new Notifications;
+
+  // Cria thread que recebe pacotes
+  thread thRecebe(threadRecebe, instances, profiles, notifications);
+
+  thRecebe.join();
+
+  return 0;
+}
+
+void threadRecebe(Instances* instances, Profiles* profiles, Notifications* notifications){
   // UDP object
   UDP udp;
   udp.openSocket();
   udp.bindSocket();
-
-  // Server memory
-  // Instances
-  Instances instances;
-  // Profiles
-  Profiles profiles;
-  // Notifications
-  Notifications notifications;
 
   while(true){
     // Endereco do cliente que enviou a mensagem
@@ -55,27 +67,27 @@ int main() {
 
     case LOGIN:
       // Login
-      instances.newInstance(packet->payload, cliaddr);
-      profiles.login(packet->payload);
+      instances->newInstance(packet->payload, cliaddr);
+      profiles->login(packet->payload);
       cout << "login: " << packet->payload;
       cout << " in port " << cliaddr.sin_port << endl;
       break;
 
     case FOLLOW:
       // Adiciona seguidor
-      profiles.addFollow(packet->profile, packet->payload);
+      profiles->addFollow(packet->profile, packet->payload);
       break;
 
     case UNFOLLOW:
       // Remove seguidor
-      profiles.unFollow(packet->profile, packet->payload);
+      profiles->unFollow(packet->profile, packet->payload);
       break;
 
     case SEND:
       // Adiciona mensagem na lista de notificacoes
       // Pega lista de seguidores do perfil que enviou a mensagem
-      followers = profiles.getFollowers(packet->profile);
-      notifications.newMessage(move(packet), followers);
+      followers = profiles->getFollowers(packet->profile);
+      notifications->newMessage(move(packet), followers);
       break;
 
     default:
@@ -83,6 +95,4 @@ int main() {
       break;
     }
   }
-
-  return 0;
 }
