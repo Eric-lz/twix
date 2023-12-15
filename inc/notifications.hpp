@@ -21,6 +21,9 @@ private:
   unsigned int notif_id;
 
 public:
+  // Constructor
+  Notifications();
+
   // Recebe mensagem de um client
   void newMessage(std::unique_ptr<Packet> packet, std::set<std::string> followers);
 };

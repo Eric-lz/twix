@@ -28,3 +28,8 @@ void Notifications::newMessage(unique_ptr<Packet> packet, set<string> followers)
   cout << packet->profile << ": ";
   cout << notif.message << endl;
 }
+
+Notifications::Notifications(){
+  // Inicializa id em zero
+  notif_id = 0;
+}
