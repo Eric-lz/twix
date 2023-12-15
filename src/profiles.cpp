@@ -43,25 +43,3 @@ void ProfilesList::unFollow(string follower, string following){
   cout << follower << " no longer follows ";
   cout << following << endl;
 }
-
-void ProfilesList::recebeMensagem(unique_ptr<Packet> packet){
-  // Indice do perfil que enviou a mensagem
-  auto perfil = profiles.at(getProfileByName(packet->profile));
-
-  // Adiciona na lista de notificações recebidas
-  Notification notif;
-  notif.id = notif_id++;
-  notif.timestamp = packet->timestamp;
-  notif.length = packet->length;
-  notif.pending = perfil.follow.size();
-  strncpy(notif.message, packet->payload, MAXLEN);
-  notifications.push_back(notif);
-  
-  // Adiciona na lista de notificações pendentes
-  for(string follower : perfil.follow)
-    pending_notifs.insert(pair<string, unsigned> (follower, notif.id));
-
-  cout << "id: " << notif.id << ' ';
-  cout << packet->profile << ": ";
-  cout << packet->payload << endl;
-}

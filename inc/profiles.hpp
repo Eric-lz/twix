@@ -18,8 +18,6 @@ class ProfilesList{
 private:
   // list of profiles
   std::vector<Profile> profiles;
-  std::vector<Notification> notifications;
-  std::multimap<std::string, unsigned> pending_notifs;
   unsigned int notif_id = 0;
 
   // Procura perfil pelo nome e retorna seu indice
@@ -34,7 +32,4 @@ public:
 
   // Para de seguir um perfil
   void unFollow(std::string follower, std::string following);
-
-  // Recebe mensagem de um client
-  void recebeMensagem(std::unique_ptr<Packet> packet);
 };

@@ -10,7 +10,7 @@ OBJ_DIR := build
 # Object files
 OBJ = udp.o
 # Server specific object files
-_SERVER_O = $(OBJ) server.o profiles.o
+_SERVER_O = $(OBJ) server.o profiles.o instances.o notifications.o
 # Client specific object files
 _CLIENT_O = $(OBJ) client.o
 

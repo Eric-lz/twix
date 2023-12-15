@@ -6,6 +6,7 @@
 
 #include "udp.hpp"
 #include "server.hpp"
+#include "instances.hpp"
 #include "profiles.hpp"
 #include "notifications.hpp"
 
@@ -25,10 +26,12 @@ int main() {
   udp.bindSocket();
 
   // Server memory
+  // Instances
+  Instances instances;
+  // Profiles
   ProfilesList profiles;
-
-  // Perfil - Porta
-  map<string, sockaddr_in> clients;
+  // Notifications
+  Notifications notifications;
 
   while(true){
     // Endereco do cliente que enviou a mensagem
@@ -47,10 +50,10 @@ int main() {
 
     case LOGIN:
       // Login
+      instances.newInstance(packet->payload, cliaddr);
       profiles.login(packet->payload);
-      clients[packet->payload] = cliaddr;
       cout << "login: " << packet->payload;
-      cout << " in port " << clients[packet->payload].sin_port << endl;
+      cout << " in port " << cliaddr.sin_port << endl;
       break;
 
     case FOLLOW:
@@ -64,8 +67,8 @@ int main() {
       break;
 
     case SEND:
-      // Recebe mensagem do client 
-      profiles.recebeMensagem(move(packet));
+      // Adiciona mensagem na lista de notificacoes 
+      notifications.newMessage(move(packet));
       break;
 
     default:
@@ -75,13 +78,4 @@ int main() {
   }
 
   return 0;
-}
-
-// Busca o client pela porta e retorna seu indice
-// Retorna -1 se nao encontra
-int findPort(map<in_port_t, int>& clients, in_port_t port){
-  if(clients.find(port) != clients.end())
-    return clients[port];
-
-  return -1;
 }

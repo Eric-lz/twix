@@ -1,0 +1,31 @@
+#include <iostream>
+#include <memory>
+#include <cstring>
+#include <algorithm>
+#include <ctime>
+
+#include "notifications.hpp"
+
+using namespace std;
+
+void Notifications::newMessage(unique_ptr<Packet> packet){
+  // Cria nova notificação
+  Notification notif;
+  notif.id = notif_id++;
+  notif.timestamp = packet->timestamp;
+  // notif.pending
+  notif.length = packet->length;
+  strncpy(notif.message, packet->payload, MAXLEN);
+
+  // Adiciona na lista de notificacoes
+  notifications.push_back(notif);
+
+  // Adiciona na lista de notificacoes pendentes
+  // notif.pending = perfil.follow.size();
+  // for(string follower : perfil.follow)
+  //   pending_notifs.insert(pair<string, unsigned> (follower, notif.id));
+
+  cout << "id: " << notif.id << ' ';
+  cout << packet->profile << ": ";
+  cout << notif.message << endl;
+}
