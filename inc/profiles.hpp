@@ -18,7 +18,6 @@ class ProfilesList{
 private:
   // list of profiles
   std::vector<Profile> profiles;
-  unsigned int notif_id = 0;
 
   // Procura perfil pelo nome e retorna seu indice
   int getProfileByName(std::string name);
