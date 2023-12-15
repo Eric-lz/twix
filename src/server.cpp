@@ -3,6 +3,7 @@
 #include <cstring>
 #include <algorithm>
 #include <ctime>
+#include <set>
 
 #include "udp.hpp"
 #include "server.hpp"
@@ -13,6 +14,7 @@
 using std::unique_ptr;
 using std::pair;
 using std::map;
+using std::set;
 using std::vector;
 using std::string;
 using std::find;
@@ -29,7 +31,7 @@ int main() {
   // Instances
   Instances instances;
   // Profiles
-  ProfilesList profiles;
+  Profiles profiles;
   // Notifications
   Notifications notifications;
 
@@ -41,6 +43,9 @@ int main() {
     // Recebe pacote do cliente
     unique_ptr<Packet> packet;
     packet = udp.recebe(&cliaddr);
+
+    // Lista de seguidores
+    set<string> followers;
 
     // Ação do servidor baseada no tipo de packet recebido
     switch(packet->type){
@@ -67,8 +72,10 @@ int main() {
       break;
 
     case SEND:
-      // Adiciona mensagem na lista de notificacoes 
-      notifications.newMessage(move(packet));
+      // Adiciona mensagem na lista de notificacoes
+      // Pega lista de seguidores do perfil que enviou a mensagem
+      followers = profiles.getFollowers(packet->profile);
+      notifications.newMessage(move(packet), followers);
       break;
 
     default:

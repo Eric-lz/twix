@@ -14,7 +14,7 @@ typedef struct profile_t{
   std::set<std::string> follow;
 } Profile;
 
-class ProfilesList{
+class Profiles{
 private:
   // list of profiles
   std::vector<Profile> profiles;
@@ -31,4 +31,7 @@ public:
 
   // Para de seguir um perfil
   void unFollow(std::string follower, std::string following);
+
+  // Retorna lista de seguidores de um perfil
+  std::set<std::string> getFollowers(std::string profile);
 };

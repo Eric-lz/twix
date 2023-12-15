@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <map>
+#include <set>
 
 #include "udp.hpp"
 
@@ -21,5 +22,5 @@ private:
 
 public:
   // Recebe mensagem de um client
-  void newMessage(std::unique_ptr<Packet> packet);
+  void newMessage(std::unique_ptr<Packet> packet, std::set<std::string> followers);
 };

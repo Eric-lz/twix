@@ -8,12 +8,12 @@
 
 using namespace std;
 
-void Notifications::newMessage(unique_ptr<Packet> packet){
+void Notifications::newMessage(unique_ptr<Packet> packet, set<string> followers){
   // Cria nova notificação
   Notification notif;
   notif.id = notif_id++;
   notif.timestamp = packet->timestamp;
-  // notif.pending
+  notif.pending = followers.size();
   notif.length = packet->length;
   strncpy(notif.message, packet->payload, MAXLEN);
 
@@ -21,9 +21,8 @@ void Notifications::newMessage(unique_ptr<Packet> packet){
   notifications.push_back(notif);
 
   // Adiciona na lista de notificacoes pendentes
-  // notif.pending = perfil.follow.size();
-  // for(string follower : perfil.follow)
-  //   pending_notifs.insert(pair<string, unsigned> (follower, notif.id));
+  for(string follower : followers)
+    pending_notifs.insert(pair<string, unsigned> (follower, notif.id));
 
   cout << "id: " << notif.id << ' ';
   cout << packet->profile << ": ";

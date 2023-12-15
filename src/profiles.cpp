@@ -9,7 +9,7 @@
 
 using namespace std;
 
-int ProfilesList::getProfileByName(string name){
+int Profiles::getProfileByName(string name){
   for(int i = 0; auto p : profiles){
     if(p.name == name)
       return i;
@@ -18,7 +18,7 @@ int ProfilesList::getProfileByName(string name){
   return -1;
 }
 
-void ProfilesList::login(string profile){
+void Profiles::login(string profile){
   // Se o perfil não existe na lista, cria
   if(getProfileByName(profile) < 0){
     Profile p;
@@ -27,7 +27,7 @@ void ProfilesList::login(string profile){
   }
 }
 
-void ProfilesList::addFollow(string follower, string following){
+void Profiles::addFollow(string follower, string following){
   int i = getProfileByName(follower);
   profiles.at(i).follow.insert(following);
 
@@ -35,11 +35,16 @@ void ProfilesList::addFollow(string follower, string following){
   cout << following << endl;
 }
 
-void ProfilesList::unFollow(string follower, string following){
+void Profiles::unFollow(string follower, string following){
   // Se encontrar seguidor, remove da lista
   int i = getProfileByName(follower);
   profiles.at(i).follow.erase(following);
 
   cout << follower << " no longer follows ";
   cout << following << endl;
+}
+
+set<string> Profiles::getFollowers(std::string profile){
+  int i = getProfileByName(profile);
+  return profiles.at(i).follow;
 }
