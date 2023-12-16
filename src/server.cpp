@@ -16,6 +16,7 @@ using std::thread;
 using std::unique_ptr;
 using std::pair;
 using std::map;
+using std::multimap;
 using std::set;
 using std::vector;
 using std::string;
@@ -24,7 +25,6 @@ using std::cout;
 using std::endl;
 
 int main() {
-
   // Server memory
   // Instances
   Instances* instances = new Instances;
@@ -35,14 +35,16 @@ int main() {
 
   // Cria thread que recebe pacotes
   thread thRecebe(threadRecebe, instances, profiles, notifications);
+  thread thEnvia(threadEnvia, instances, profiles, notifications);
 
   thRecebe.join();
+  thEnvia.join();
 
   return 0;
 }
 
 void threadRecebe(Instances* instances, Profiles* profiles, Notifications* notifications){
-  // UDP object
+  // UDP socket
   UDP udp;
   udp.openSocket();
   udp.bindSocket();
@@ -93,6 +95,24 @@ void threadRecebe(Instances* instances, Profiles* profiles, Notifications* notif
     default:
       perror("unknown packet type");
       break;
+    }
+  }
+}
+
+void threadEnvia(Instances* instances, Profiles* profiles, Notifications* notifications){
+  // UDP socket
+  UDP udp;
+  udp.openSocket();
+
+  while(true){
+    auto pending = notifications->getPendingNotifs();
+    if(!pending.empty()){
+      for (multimap<string, unsigned int>::iterator it = pending.begin(); it != pending.end(); ++it) {
+        cout << "send to: " << it->first << ": ";
+        cout << it->second << endl;
+        // consume pair
+        notifications->erase(it);
+      }
     }
   }
 }
