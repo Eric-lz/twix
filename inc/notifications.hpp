@@ -17,7 +17,7 @@ typedef struct notification_t{
 class Notifications{
 private:
   std::vector<Notification> notifications;
-  std::multimap<std::string, unsigned> pending_notifs;
+  std::multimap<std::string, unsigned int> pending_notifs;
   unsigned int notif_id;
 
 public:
@@ -26,4 +26,10 @@ public:
 
   // Recebe mensagem de um client
   void newMessage(std::unique_ptr<Packet> packet, std::set<std::string> followers);
+  
+  // Retorna a lista de notificações pendentes
+  std::multimap<std::string, unsigned int> getPendingNotifs();
+  
+  // Remove uma notificação da lista 
+  void erase(std::multimap<std::string, unsigned int>::iterator it);
 };
