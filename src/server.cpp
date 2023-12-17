@@ -57,7 +57,7 @@ int main() {
       profiles->login(packet->payload);
 
       // change socket address
-      udp->changeAddr(cliaddr.sin_addr.s_addr);
+      // udp->changeAddr(cliaddr);
 
       cout << "login: " << packet->payload;
       cout << " in port " << cliaddr.sin_port << endl;

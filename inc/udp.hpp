@@ -76,7 +76,7 @@ public:
   int login(const std::string name);
 
   // Change address to listen
-  void changeAddr(const in_addr_t inaddr);
+  void changeAddr(const struct sockaddr_in inaddr);
 
   // Envia um pacote vazio
   void ping();
