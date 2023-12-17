@@ -31,5 +31,5 @@ public:
   std::multimap<std::string, unsigned int> getPendingNotifs();
   
   // Remove uma notificação da lista 
-  void erase(std::multimap<std::string, unsigned int>::iterator it);
+  void deleteNotif(std::multimap<std::string, unsigned int>::iterator it);
 };

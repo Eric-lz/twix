@@ -39,9 +39,10 @@ std::multimap<std::string, unsigned int> Notifications::getPendingNotifs(){
   return pending_notifs;
 }
 
-void Notifications::erase(multimap<string, unsigned int>::iterator it){
+void Notifications::deleteNotif(multimap<string, unsigned int>::iterator it){
   mutex m;
   m.lock();
-  pending_notifs.erase(it);
+  // pending_notifs.erase(it);
+  pending_notifs.clear();
   m.unlock();
 }

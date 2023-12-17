@@ -103,15 +103,16 @@ void threadEnvia(Instances* instances, Profiles* profiles, Notifications* notifi
   // UDP socket
   UDP udp;
   udp.openSocket();
-
+  cout << "socket aberto\n";
   while(true){
     auto pending = notifications->getPendingNotifs();
-    if(!pending.empty()){
+
+    if(!pending.empty()){    
       for (multimap<string, unsigned int>::iterator it = pending.begin(); it != pending.end(); ++it) {
         cout << "send to: " << it->first << ": ";
         cout << it->second << endl;
-        // consume pair
-        notifications->erase(it);
+        // consume notification
+        notifications->deleteNotif(it);
       }
     }
   }
