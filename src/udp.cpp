@@ -103,8 +103,8 @@ int UDP::login(const string name){
   return envia(move(packet));
 }
 
-void UDP::changeAddr(const in_addr_t inaddr){
-  servaddr.sin_addr.s_addr = inaddr;
+void UDP::changeAddr(const sockaddr_in inaddr){
+  servaddr = inaddr;
   this->bindSocket();
 }
 
