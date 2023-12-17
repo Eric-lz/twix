@@ -32,23 +32,49 @@ int main() {
   Profiles* profiles = new Profiles;
   // Notifications
   Notifications* notifications = new Notifications;
+  // Session threads
+  vector<thread> threads;
 
-  // Cria thread que recebe pacotes
-  thread thRecebe(threadRecebe, instances, profiles, notifications);
-  thread thEnvia(threadEnvia, instances, profiles, notifications);
+  while(true){
+    // Open UDP socket to listen for logins
+    UDP* udp = new UDP;
+    udp->openSocket();
+    udp->bindSocket();
+    cout << "new socket opened" << endl;
 
-  thRecebe.join();
-  thEnvia.join();
+    // Endereco do cliente que enviou a mensagem
+    struct sockaddr_in cliaddr;
+    memset(&cliaddr, 0, sizeof(cliaddr));
+
+    // Recebe pacote do cliente
+    unique_ptr<Packet> packet;
+    packet = udp->recebe(&cliaddr);
+    cout << "packet received" << endl;
+
+    // Listen for login packets
+    if(packet->type == LOGIN){
+      instances->newInstance(packet->payload, cliaddr);
+      profiles->login(packet->payload);
+
+      // change socket address
+      udp->changeAddr(cliaddr.sin_addr.s_addr);
+
+      cout << "login: " << packet->payload;
+      cout << " in port " << cliaddr.sin_port << endl;
+      
+      // Create new thread to handle messages
+      // (pass UDP socket and server memory)
+      thread thSession(threadSession, udp, instances, profiles, notifications);
+
+      // Insert thread into Threads option
+      threads.push_back(move(thSession));
+    }
+  }
 
   return 0;
 }
 
-void threadRecebe(Instances* instances, Profiles* profiles, Notifications* notifications){
-  // UDP socket
-  UDP udp;
-  udp.openSocket();
-  udp.bindSocket();
-
+void threadSession(UDP* udp, Instances* instances, Profiles* profiles, Notifications* notifications){
   while(true){
     // Endereco do cliente que enviou a mensagem
     struct sockaddr_in cliaddr;
@@ -56,7 +82,7 @@ void threadRecebe(Instances* instances, Profiles* profiles, Notifications* notif
 
     // Recebe pacote do cliente
     unique_ptr<Packet> packet;
-    packet = udp.recebe(&cliaddr);
+    packet = udp->recebe(&cliaddr);
 
     // Lista de seguidores
     set<string> followers;
@@ -69,10 +95,7 @@ void threadRecebe(Instances* instances, Profiles* profiles, Notifications* notif
 
     case LOGIN:
       // Login
-      instances->newInstance(packet->payload, cliaddr);
-      profiles->login(packet->payload);
-      cout << "login: " << packet->payload;
-      cout << " in port " << cliaddr.sin_port << endl;
+      perror("login already handled");
       break;
 
     case FOLLOW:

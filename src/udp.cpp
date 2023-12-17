@@ -103,6 +103,11 @@ int UDP::login(const string name){
   return envia(move(packet));
 }
 
+void UDP::changeAddr(const in_addr_t inaddr){
+  servaddr.sin_addr.s_addr = inaddr;
+  this->bindSocket();
+}
+
 void UDP::ping(){
   auto packet = make_unique<Packet>();
   packet->timestamp = time(NULL);
@@ -110,3 +115,4 @@ void UDP::ping(){
   strncpy(packet->payload, "ping", 5);
   envia(move(packet));
 }
+
