@@ -21,6 +21,7 @@ void Notifications::newMessage(unique_ptr<Packet> packet, set<string> followers)
   notif.timestamp = packet->timestamp;
   notif.pending = followers.size();
   notif.length = packet->length;
+  strncpy(notif.sender, packet->profile, 20);
   strncpy(notif.message, packet->payload, MAXLEN);
 
   // Adiciona na lista de notificacoes
@@ -37,6 +38,10 @@ void Notifications::newMessage(unique_ptr<Packet> packet, set<string> followers)
 
 std::multimap<std::string, unsigned int> Notifications::getPendingNotifs(){
   return pending_notifs;
+}
+
+bool Notifications::isEmpty(){
+  return pending_notifs.empty();
 }
 
 void Notifications::deleteNotif(multimap<string, unsigned int>::iterator it){
