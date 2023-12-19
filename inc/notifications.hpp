@@ -12,7 +12,8 @@ typedef struct notification_t{
   unsigned int timestamp; // Timestamp da notificação
   int pending;            // Quantidade de leitores pendentes
   int length;             // Tamanho da mensagem
-  char message[MAXLEN+1]; //Dados da mensagem
+  char sender[21];        // Perfil que enviou a mensagem
+  char message[MAXLEN+1]; // Dados da mensagem
 } Notification;
 
 class Notifications{
@@ -30,6 +31,9 @@ public:
   
   // Retorna a lista de notificações pendentes
   std::multimap<std::string, unsigned int> getPendingNotifs();
+
+  // Retorna se lista de notificações pendentes esta vazia
+  bool isEmpty();
   
   // Remove uma notificação da lista 
   void deleteNotif(std::multimap<std::string, unsigned int>::iterator it);

@@ -28,8 +28,8 @@ void Profiles::login(string profile){
 }
 
 void Profiles::addFollow(string follower, string following){
-  int i = getProfileByName(follower);
-  profiles.at(i).follow.insert(following);
+  int i = getProfileByName(following);
+  profiles.at(i).follow.insert(follower);
 
   cout << follower << " now follows ";
   cout << following << endl;

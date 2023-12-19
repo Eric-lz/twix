@@ -34,47 +34,11 @@ int main() {
   Notifications* notifications = new Notifications;
   // Session threads
   vector<thread> threads;
+  // Open UDP socket to listen for logins
+  UDP* udp = new UDP;
+  udp->openSocket();
+  udp->bindSocket();
 
-  while(true){
-    // Open UDP socket to listen for logins
-    UDP* udp = new UDP;
-    udp->openSocket();
-    udp->bindSocket();
-    cout << "new socket opened" << endl;
-
-    // Endereco do cliente que enviou a mensagem
-    struct sockaddr_in cliaddr;
-    memset(&cliaddr, 0, sizeof(cliaddr));
-
-    // Recebe pacote do cliente
-    unique_ptr<Packet> packet;
-    packet = udp->recebe(&cliaddr);
-    cout << "packet received" << endl;
-
-    // Listen for login packets
-    if(packet->type == LOGIN){
-      instances->newInstance(packet->payload, cliaddr);
-      profiles->login(packet->payload);
-
-      // change socket address
-      // udp->changeAddr(cliaddr);
-
-      cout << "login: " << packet->payload;
-      cout << " in port " << cliaddr.sin_port << endl;
-      
-      // Create new thread to handle messages
-      // (pass UDP socket and server memory)
-      thread thSession(threadSession, udp, instances, profiles, notifications);
-
-      // Insert thread into Threads option
-      threads.push_back(move(thSession));
-    }
-  }
-
-  return 0;
-}
-
-void threadSession(UDP* udp, Instances* instances, Profiles* profiles, Notifications* notifications){
   while(true){
     // Endereco do cliente que enviou a mensagem
     struct sockaddr_in cliaddr;
@@ -95,6 +59,11 @@ void threadSession(UDP* udp, Instances* instances, Profiles* profiles, Notificat
 
     case LOGIN:
       // Login
+      // Create new thread to handle messages
+      // (pass UDP socket and server memory)
+      instances->newInstance(packet->payload, cliaddr);
+      profiles->login(packet->payload);
+      threads.push_back(thread(threadSession, udp, cliaddr, profiles, notifications));
       perror("login already handled");
       break;
 
@@ -120,23 +89,28 @@ void threadSession(UDP* udp, Instances* instances, Profiles* profiles, Notificat
       break;
     }
   }
+
+  return 0;
 }
 
-void threadEnvia(Instances* instances, Profiles* profiles, Notifications* notifications){
-  // UDP socket
-  UDP udp;
-  udp.openSocket();
-  cout << "socket aberto\n";
+void threadSession(UDP* udp, sockaddr_in cliaddr, Profiles* profiles, Notifications* notifications){
   while(true){
-    auto pending = notifications->getPendingNotifs();
+    if(!notifications->isEmpty()){
+      // Pacote para enviar
+      unique_ptr<Packet> packet;
 
-    if(!pending.empty()){    
-      for (multimap<string, unsigned int>::iterator it = pending.begin(); it != pending.end(); ++it) {
-        cout << "send to: " << it->first << ": ";
-        cout << it->second << endl;
+      // Lista de notificacoes pendentes
+      auto pending = notifications->getPendingNotifs();
+
+      for (multimap<string, unsigned int>::iterator notif = pending.begin(); notif != pending.end(); ++notif) { 
         // consume notification
-        notifications->deleteNotif(it);
+        cout << "send notif.id " << notif->second << " to ";
+        cout << notif->first << endl;
+        // consume notification
+        notifications->deleteNotif(notif);
       }
     }
+
+    sleep(1);
   }
 }
