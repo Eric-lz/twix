@@ -34,7 +34,10 @@ public:
 
   // Retorna se lista de notificações pendentes esta vazia
   bool isEmpty();
-  
+
+  // Retorna a notificacao ID
+  Notification getNotifByID(unsigned int notif_id);
+
   // Remove uma notificação da lista 
   void deleteNotif(std::multimap<std::string, unsigned int>::iterator it);
 };

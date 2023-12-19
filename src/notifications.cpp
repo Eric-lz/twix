@@ -44,6 +44,10 @@ bool Notifications::isEmpty(){
   return pending_notifs.empty();
 }
 
+Notification Notifications::getNotifByID(unsigned int notif_id){
+  return notifications.at(notif_id);
+}
+
 void Notifications::deleteNotif(multimap<string, unsigned int>::iterator it){
   mutex m;
   m.lock();

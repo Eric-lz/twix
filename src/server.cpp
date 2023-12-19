@@ -32,12 +32,13 @@ int main() {
   Profiles* profiles = new Profiles;
   // Notifications
   Notifications* notifications = new Notifications;
-  // Session threads
-  vector<thread> threads;
   // Open UDP socket to listen for logins
   UDP* udp = new UDP;
   udp->openSocket();
   udp->bindSocket();
+
+  // Thread que gerencia notificacoes e envios
+  thread thEnvia(threadSession, udp, instances, notifications);
 
   while(true){
     // Endereco do cliente que enviou a mensagem
@@ -63,8 +64,6 @@ int main() {
       // (pass UDP socket and server memory)
       instances->newInstance(packet->payload, cliaddr);
       profiles->login(packet->payload);
-      threads.push_back(thread(threadSession, udp, cliaddr, profiles, notifications));
-      perror("login already handled");
       break;
 
     case FOLLOW:
@@ -93,21 +92,25 @@ int main() {
   return 0;
 }
 
-void threadSession(UDP* udp, sockaddr_in cliaddr, Profiles* profiles, Notifications* notifications){
+void threadSession(UDP* udp, Instances* instances, Notifications* notifications){
   while(true){
     if(!notifications->isEmpty()){
-      // Pacote para enviar
-      unique_ptr<Packet> packet;
-
       // Lista de notificacoes pendentes
       auto pending = notifications->getPendingNotifs();
 
-      for (multimap<string, unsigned int>::iterator notif = pending.begin(); notif != pending.end(); ++notif) { 
+      for (multimap<string, unsigned int>::iterator notif_it = pending.begin(); notif_it != pending.end(); ++notif_it) { 
         // consume notification
-        cout << "send notif.id " << notif->second << " to ";
-        cout << notif->first << endl;
+        cout << "send notif.id " << notif_it->second << " to ";
+        cout << notif_it->first << endl;
+
+        // get notification
+        // auto notif = notifications->getNotifByID(notif_it->second);
+
+        // build packet
+        // unique_ptr<Packet> packet;
+
         // consume notification
-        notifications->deleteNotif(notif);
+        notifications->deleteNotif(notif_it);
       }
     }
 
