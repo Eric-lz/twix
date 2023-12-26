@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+
 // Porta da aplicacao
 #define PORT 4000
 
@@ -16,24 +17,25 @@
 
 // Tipo do pacote (ex. DATA, CMD)
 enum PacketType{
-  PING,
-  LOGIN,
+  PING, //TODO: ainda n implementado, SERVIDOR deve enviar um ack para o cliente
+  LOGIN, //ajuda servidor a identificar quantidade de sessoes do cliente
   FOLLOW,
   UNFOLLOW,
   SEND,
-  QUIT,
+  QUIT,//TODO: ainda n implementado, CLIENTE deve enviar um sinal que uma sessao foi encerrada para o servidor
   UNKNOWN
 };
 
-// (Sugestão) Estrutura para troca de mensagens entre cliente e servidor
+//Estrutura para troca de mensagens entre cliente e servidor
 typedef struct packet_t{
   unsigned int seqn;      //Número de sequência
   unsigned int timestamp; //Timestamp do dado
-  PacketType type;        //Tipo do pacote (ex. DATA | CMD)
+  PacketType type;        //Tipo do pacote (ex. PING | SEND | FOLLOW...)
   int length;             //Comprimento do payload
   char profile[21];       //Perfil que enviou o pacote
-  char payload[MAXLEN+1]; //Dados da mensagem
+  char payload[MAXLEN+1]; //Dados da mensagem 140 CARACTERES +1 detalhe do C++ para contabilidar o /0
 } Packet;
+
 
 // Abstrai criacao de socket e envio de pacotes
 class UDP{
@@ -41,7 +43,7 @@ private:
   // Socket file descriptor
   int sockfd;
   // Profile name
-  std::string name = "server";
+  std::string name = "server"; //esse nome eh alterado quando o cliente faz login
 
   // Server address structure
   struct sockaddr_in servaddr;
@@ -65,7 +67,7 @@ public:
   // (Server) Bind address to socket
   int bindSocket();
 
-  // Envia um packet para o socket aberto
+  // Envia um packet para o socket aberto, recebe pacote do move, opcionalmente passa o endereco de envio do pacote se nao passar o cliente envia automaticamente
   int envia(std::unique_ptr<Packet> packet, struct sockaddr_in* outaddr = nullptr);
 
   // Recebe packet do socket aberto
@@ -75,7 +77,7 @@ public:
   // Envia um packet de login com o perfil do usuario
   int login(const std::string name);
 
-  // Change address to listen
+  // Change address to listen TEST: verificar porque foi implementado se apagarmos, para em pe?
   void changeAddr(const struct sockaddr_in inaddr);
 
   // Envia um pacote vazio
