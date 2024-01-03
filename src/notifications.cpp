@@ -27,7 +27,15 @@ void Notifications::newMessage(unique_ptr<Packet> packet, set<string> followers)
   // Adiciona na lista de notificacoes
   notifications.push_back(notif);
 
-  // Adiciona na lista de notificacoes pendentes
+  // Adiciona na lista de notificacoes pendentes uma mensagem para cada seguidor
+  /*notif.id followers
+    0     @doze
+    0     @onze
+    0     @treze
+    1     @doze
+  */
+
+ //TODO: validar se o usuario que postou deve visualizar tambem a notificacao que ele mesmo postou
   for(string follower : followers)
     pending_notifs.insert(pair<string, unsigned> (follower, notif.id));
 
@@ -45,6 +53,7 @@ bool Notifications::isEmpty(){
 }
 
 Notification Notifications::getNotifByID(unsigned int notif_id){
+  //TEST: tratar excecao caso notif_id nao exista
   return notifications.at(notif_id);
 }
 
@@ -52,6 +61,7 @@ void Notifications::deleteNotif(multimap<string, unsigned int>::iterator it){
   mutex m;
   m.lock();
   // pending_notifs.erase(it);
+  //TODO: alterar para apagar somente a notificacao do perfil que esta lendo
   pending_notifs.clear();
   m.unlock();
 }
