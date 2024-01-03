@@ -30,7 +30,7 @@ void Notifications::newMessage(unique_ptr<Packet> packet, set<string> followers)
   // Adiciona na lista de notificacoes pendentes uma mensagem para cada seguidor
   /*notif.id followers
     0     @doze
-    0     @onze
+    0     @onze --OFFLINE
     0     @treze
     1     @doze
   */
