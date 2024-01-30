@@ -10,7 +10,7 @@
 using namespace std;
 
 int Profiles::getProfileByName(string name){
-  for(int i = 0; auto p : profiles){
+  for(int i = 0; auto p : profiles){  // initializer in range-based for loop was introduced in C++23
     if(p.name == name)
       return i;
   }
@@ -28,17 +28,23 @@ void Profiles::login(string profile){
 }
 
 void Profiles::addFollow(string follower, string following){
+  // Se encontrar perfil a ser seguido, adicionar na lista de seguidores dele
   int i = getProfileByName(following);
-  profiles.at(i).follow.insert(follower);
 
-  cout << follower << " now follows ";
-  cout << following << endl;
+  if(i < 0){
+    cout << "profile " << following << " does not exist!" << endl;
+  }
+  else{
+    profiles.at(i).followers.insert(follower);
+    cout << follower << " now follows ";
+    cout << following << endl;
+  }
 }
 
 void Profiles::unFollow(string follower, string following){
-  // Se encontrar seguidor, remove da lista
+  // Se encontrar seguidor, remove da lista (tratado automaticamente pelo erase())
   int i = getProfileByName(follower);
-  profiles.at(i).follow.erase(following);
+  profiles.at(i).followers.erase(following);
 
   cout << follower << " no longer follows ";
   cout << following << endl;
@@ -46,5 +52,5 @@ void Profiles::unFollow(string follower, string following){
 
 set<string> Profiles::getFollowers(std::string profile){
   int i = getProfileByName(profile);
-  return profiles.at(i).follow;
+  return profiles.at(i).followers;
 }

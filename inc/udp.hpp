@@ -1,4 +1,5 @@
 #pragma once
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -7,7 +8,6 @@
 #include <netinet/in.h>
 #include <memory>
 #include <string>
-
 
 // Porta da aplicacao
 #define PORT 4000

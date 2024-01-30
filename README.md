@@ -16,32 +16,24 @@ O cliente permitirá ao usuário fazer uso do serviço de notificações.
 Quando o usuário iniciar um processo cliente, o cliente estabelecerá uma conexão
 com o servidor e iniciará uma “sessão de uso” atrelada ao “perfil” do usuário.
 
-
 # Esturtura do projeto
-Pastas com include (definição) de cada classe e pasta com source (código fonte).
+- **Diretório src/** : arquivos fonte (*.cpp);
+- **Diretório inc/** : arquivos cabeçalho (*.hpp);
+- **Diretório build/** : arquivos objeto (*.o);
+
+Os binários do servidor e do cliente são compilados na pasta raíz do projeto.
 
 # Estrutura Makefile
-INC_DIR pasta include
-CXX compilador
-CXXFlAGS = para execução normal
-DPLYFLAGS = para execução com deploy
+- **INC_DIR**: diretório com arquivos cabeçalho (*.hpp);
+- **CXX**: compilador C++ utilizado;
+- **CXXFLAGS**: opções do compilador para debug;
+- **DPLYFLAGS**: opções do compilador para deploy;
+- **SERVER_O**: arquivos objeto necessários para o servidor;
+- **CLIENT_O**: arquivos objeto necessários para o cliente.
 
-SERVER_O para criar o servidor
-CLIENT_O par criar o cliente
-
-COMANDOS:
-Make all: complila tudo
-
-make server: servidor
-
-make client: cliente
-
-make clean: limpa os arquivos intermediarios para manter organizado durante desenvolvimentos
-
-make test:re-compila tudo e inicia o servidor de forma padronizada
-
-make deploy: mesmo que make all, porém com otimizações
-
-make deploy_s: servidor otimizado
-
-make deploy_c: cliente otimizado
+## Comandos `make`:
+- `all`: compila servidor e cliente (sem otimizações);
+- `server` e `client`: para compilar separadamente o servidor ou o cliente;
+- `test`: re-compila tudo e inicia o servidor;
+- `clean`: limpa arquivos binários e objetos;
+- `deploy`: compila servidor e cliente com otimizações e sem opções de debug.

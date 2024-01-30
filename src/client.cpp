@@ -25,7 +25,7 @@ int main() {
   cout << "\033[2J\033[1;1H"; //clear screen
   cout << "Bem-vindo ao Twix\n";
   
-  // Leitura do nome do perfil com limitações de nome de usuário definidas no escopo do trabalh
+  // Leitura do nome do perfil com as restrições definidas na especificação do trabalho
   string name;
   while(name.empty()){
     cout << "Digite seu perfil: @";
@@ -50,36 +50,33 @@ int main() {
   cout << "Logado como " << name << '\n';
   cout << "Cada mensagem deve conter no max 140 caracteres \n";
   cout << "Comandos: SEND msg | FOLLOW profile | UNFOLLOW profile" << endl;
-  /*comandos tb aceitam somente a letra inicial do comanto e nao eh necessario usar capslock*/
+  /*comandos tb aceitam somente a letra inicial do comando e nao eh necessario usar capslock
+  EXEMPLO DE ENTRADA VALIDA ESPERADA:
+  SEND ola!
+  unfollow @onze
+  f @doze
+  u dois 
+  follow quatro
+  */
+
   while(true){
-    // Leitura da mensagem a ser enviada
+    // Leitura da entrada do teclado
     cout << "> ";
     string input, cmd, arg;
     getline(cin, input);
 
     // Separa a entrada em comando e argumento
-    /*
-    EXEMPLO DE ENTRADA VALIDA ESPERADA:
-    SEND ola!       (press enter)
-    unfollow @onze  (press enter)
-    f @doze         (press enter)
-    u dois  (press enter)
-    follow quatro         (press enter)
-    */
     size_t it = input.find(' ');
     if(it != string::npos){
       cmd = input.substr(0, it);
       arg = input.substr(it+1);
     }
-    else cmd = input;
+    else cmd = input; // comando sem argumento
 
-    // Converte entrada para Enum
-    /*Como cada cmd pode ser digitado de varias formas pelo o usuario, o cmdToEnum visa padronizar o envio desses que traduz o comando para seu numero correspondente */
-    // (necessario para usar no switch)
-    PacketType command;
-    command = cmdToEnum(cmd);
-
+    PacketType command;       // Comandos são iguais aos tipos de packet que existem
+    command = cmdToEnum(cmd); // Converte comando para Enum
     
+    // Toma ações baseado no comando digitado pelo usuário
     switch(command){
     case SEND:
     case FOLLOW:
@@ -89,6 +86,7 @@ int main() {
 
     case QUIT:
       cout << "quit" << endl;
+      // TODO: envia sinal para o servidor fechar a sessão
       exit(0);
       break;
 
@@ -101,6 +99,9 @@ int main() {
   return 0;
 }
 
+/* Como cada comando pode ser digitado de varias formas pelo usuario,
+  o cmdToEnum() visa padronizar o envio do comando,
+  traduzindo-o para um Enum. */
 PacketType cmdToEnum(string cmd){
   for(auto &c : cmd) c = toupper(c);
   if(cmd == "SEND" || cmd == "S")
@@ -113,7 +114,7 @@ PacketType cmdToEnum(string cmd){
     return UNFOLLOW;
   
   if(cmd == "EXIT" || cmd == "QUIT" ||
-     cmd == "^C" || cmd == "^D")
+     cmd == "^C" || cmd == "^D") // TODO: CTRL + D ou CTRL + C não funcionam (é possível implementar?)
     return QUIT;
 
   return UNKNOWN;
@@ -123,11 +124,10 @@ PacketType cmdToEnum(string cmd){
 int envia(UDP& udp, PacketType type, string payload){
   // Se payload for vazio, nao envia
   if(payload.empty()){
-    cout << "Comando sem argumento" << endl;
+    cout << "Comando sem argumento" << endl;  // na verdade é payload vazio mas efetivamente da na mesma kkk
     return -1;
   }
 
-  // Cria novo packet
   // Pacote que cliente cria para enviar ao servidor acesse udp.hpp e procure por typedef struct packet_t{
   /*
   //Número de sequência
@@ -137,11 +137,12 @@ int envia(UDP& udp, PacketType type, string payload){
   //Perfil que enviou o pacote
   //Dados da mensagem
   */
+
+  // Cria novo packet
   //unique_ptr<Packet> packet; /*unique_ptr eh um smart pointer*/
+  auto packet = make_unique<Packet>(); // Forma otimizada de usar o unique_ptr por isso o trecho acima foi comentado 
 
-  auto packet = make_unique<Packet>(); /*Forma otimizada de usar o unique_ptr por isso o trecho acima foi comentado*/
-
-  // Se for FOLLOW ou UNFOLLOW e nao tiver @, adiciona tratamento para conforto do usuario
+  // Se for FOLLOW ou UNFOLLOW e nao tiver @, adiciona (melhor experiencia pro usuario)
   if(type == FOLLOW || type == UNFOLLOW)
     if(payload.at(0) != '@')
       payload.insert(0, 1, '@');
@@ -153,5 +154,5 @@ int envia(UDP& udp, PacketType type, string payload){
   packet->length = strnlen(packet->payload, MAXLEN);
 
   // Envia o pacote
-  return udp.envia(move(packet)); //move eh uma funcao que move o conteudo de um ponteiro para outro
+  return udp.envia(move(packet)); // move eh uma funcao que move o conteudo de um ponteiro para outro
 }

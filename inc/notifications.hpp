@@ -1,4 +1,5 @@
 #pragma once
+
 #include <memory>
 #include <vector>
 #include <map>
@@ -13,7 +14,7 @@ typedef struct notification_t{
   int pending;            // Quantidade de leitores pendentes
   int length;             // Tamanho da mensagem
   char sender[21];        // Perfil que enviou a mensagem 
-  //TEST: validar se o senter contempla o @ no inicio do username
+  //TEST: validar se o sender contempla o @ no inicio do username
   char message[MAXLEN+1]; // Dados da mensagem
 } Notification;
 
