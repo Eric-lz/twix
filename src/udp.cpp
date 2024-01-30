@@ -4,13 +4,7 @@
 
 #include "udp.hpp"
 
-using std::string;
-using std::unique_ptr;
-using std::make_unique;
-using std::move;
-using std::memset;
-
-
+using namespace std;
 
 UDP::UDP(){
   memset(&servaddr, 0, sizeof(servaddr));

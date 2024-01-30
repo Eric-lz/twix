@@ -6,15 +6,7 @@
 #include "client.hpp"
 #include "udp.hpp"
 
-using std::unique_ptr;
-using std::make_unique;
-using std::move;
-using std::string;
-using std::toupper;
-using std::getline;
-using std::cin;
-using std::cout;
-using std::endl;
+using namespace std;
 
 int main() {
   // UDP object

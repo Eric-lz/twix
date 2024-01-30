@@ -12,18 +12,7 @@
 #include "profiles.hpp"
 #include "notifications.hpp"
 
-/*TEST: padronizar para somente using std::namespaces, e recompilar, se funcionar apagar todos stds abaixo*/
-using std::thread;
-using std::unique_ptr;
-using std::pair;
-using std::map;
-using std::multimap;
-using std::set;
-using std::vector;
-using std::string;
-using std::find;
-using std::cout;
-using std::endl;
+using namespace std;
 
 int main() {
   // Server memory
