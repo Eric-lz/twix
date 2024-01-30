@@ -11,8 +11,8 @@
 // Estrutura para armazenar os perfis
 typedef struct profile_t{
   std::string name;
-  std::set<std::string> follow; //TODO: FOLLOW PARA FOLLWER MUDAR LISTA DE SEGUINDO PARA LISTA DE SEGUIDORES, FICA MAIS FACIL DE SABER PARA QUEM TEM QUE MANDAR NOTIFICACAO E DIMINUI CONDICAO DE CORRIDA
-  } Profile;
+  std::set<std::string> followers;
+} Profile;
 
 class Profiles{
 private:

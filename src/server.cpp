@@ -11,6 +11,7 @@
 #include "instances.hpp"
 #include "profiles.hpp"
 #include "notifications.hpp"
+
 /*TEST: padronizar para somente using std::namespaces, e recompilar, se funcionar apagar todos stds abaixo*/
 using std::thread;
 using std::unique_ptr;
@@ -33,13 +34,17 @@ int main() {
   // Notifications
   Notifications* notifications = new Notifications; /*Notificacoes | quem enviou | uid | mensagem |  */
   /* TODO: Implementar logica de notificacoes a serem enviadas 1)enviar de fato 2)marcar como enviada */
+
   // Open UDP socket to listen for logins
   UDP* udp = new UDP;
   udp->openSocket();
   udp->bindSocket();
 
   // Thread que gerencia notificacoes e envios
+  // (mutexes precisam ser criados aqui e passados para a outra thread?)
+  // (usar mutex global é uma solução?)
   thread thEnvia(threadSession, udp, instances, notifications);
+
   //Thread que escuta o recebimento de mensagens
   while(true){
     // Endereco do cliente que enviou a mensagem
@@ -93,33 +98,43 @@ int main() {
 
   return 0;
 }
+
+
 //Thread so envia notificacoes
 //TODO: Refatorar funcao para enviar notificacoes
 void threadSession(UDP* udp, Instances* instances, Notifications* notifications){
   while(true){ //loop infinito
-    if(!notifications->isEmpty()){ //se vazio nao faz nada
-      // Lista de notificacoes pendentes
-      auto pending = notifications->getPendingNotifs(); //se tem algo coloca na lista de notificacoes pendentes
+    if(!notifications->isEmpty()){ // se lista estiver vazia, nao faz nada
+      // Cria lista de notificacoes pendentes local
+      auto pending = notifications->getPendingNotifs();
+
       // Percorre lista de notificacoes pendentes
       for (multimap<string, unsigned int>::iterator notif_it = pending.begin(); notif_it != pending.end(); ++notif_it) { 
-        /*No loop for, um iterador chamado notif_it é inicializado no início do multimap (pending.begin()) e o loop continua até que este iterador alcance o final do multimap (pending.end()). A cada iteração, o iterador notif_it é incrementado (++notif_it), movendo-se para o próximo elemento no multimap.
-          Dentro do corpo do loop (que não é mostrado no código fornecido), você teria acesso ao par chave-valor atual através do iterador notif_it. Você pode acessar a chave com notif_it->first e o valor com notif_it->second.*/
+        /* Explicando esse loop:
+          Um iterador chamado notif_it é inicializado no início do multimap (pending.begin()) e o loop continua
+          até que este iterador alcance o final do multimap (pending.end()).
+          Dentro do corpo do loop (que não é mostrado no código fornecido), você teria acesso ao par chave-valor atual através do iterador notif_it.
+          Você pode acessar a chave com notif_it->first e o valor com notif_it->second.
+        */
+
         // consume notification
         //No momento funcao esta no modo debug, so imprime na tela
-        cout << "send notif.id " << notif_it->second << " to "; //second é o id da notificacao
-        cout << notif_it->first << endl; //first é o perfil que vai receber a notificacao
+        cout << "send notif.id " << notif_it->second << " to "; // second é o id da notificacao
+        cout << notif_it->first << endl; // first é o perfil que vai receber a notificacao
+
         //PROXIMOS PASSOS:
-        //TODO:get notification
-        //TODO:auto notif = notifications->getNotifByID(notif_it->second);
+        //TODO: get notification
+        //TODO: auto notif = notifications->getNotifByID(notif_it->second);
 
-        //TODO:build packet
-        //TODO:unique_ptr<Packet> packet;
+        //TODO: build packet
+        //TODO: unique_ptr<Packet> packet;
 
-        // consume notification
+        // DEBUG: consume notification (remove all notifications)
         notifications->deleteNotif(notif_it);
       }
     }
 
+    // Executa a thread de 1 em 1 segundo para não pinar a CPU em 100%
     sleep(1);
   }
 }

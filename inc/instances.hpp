@@ -1,7 +1,9 @@
 #pragma once
+
 #include <netinet/in.h>
 #include <string>
 #include <map>
+
 //ainda nao foi utilizada no projeto, provavelmente sera utilizada
 //usado para gerenciar as instancias do cliente que no maximo deve ter 2
 class Instances{
