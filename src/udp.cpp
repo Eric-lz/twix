@@ -18,6 +18,14 @@ UDP::UDP(){
   seqOut = 0;
 }
 
+UDP::UDP(sockaddr_in address){
+  memset(&cliaddr, 0, sizeof(cliaddr));
+  servaddr = address;
+
+  seqIn = 0;
+  seqOut = 0;
+}
+
 UDP::~UDP(){
   close(sockfd);
 }
@@ -47,20 +55,15 @@ int UDP::envia(unique_ptr<Packet> packet, struct sockaddr_in* outaddr){
   packet->seqn = seqOut++;
   struct sockaddr_in addr;
 
-  // Se for indicado um enderco, enviar pacote para ele interacao servidor -> cliente
-  if(outaddr != nullptr){
-    addr.sin_addr = outaddr->sin_addr;
-    addr.sin_family = outaddr->sin_family;
-    addr.sin_port = outaddr->sin_port;
-  }
-  // Se nao, usa o endereco do servidor como padrao de interacao cliente -> servidor
-
-  else{
-    addr.sin_addr = servaddr.sin_addr;
-    addr.sin_family = servaddr.sin_family;
-    addr.sin_port = servaddr.sin_port;
-  }
-  strncpy(packet->profile, name.c_str(), 20); //facilta a padronizacao de comunicacao entre cliente e servidor
+  // Se for indicado um enderco, enviar pacote para ele (servidor -> cliente)
+  // Se nao, usa o endereco indicado na inicialização (cliente -> servidor)
+  if(outaddr != nullptr)
+    addr = *outaddr;
+  else
+    addr = servaddr;
+  
+  // Envia o nome do perfil que enviou a mensagem
+  strncpy(packet->profile, name.c_str(), 20);
   
   //Funcao padrao de envio por UDP
   return sendto(sockfd, packet.get(), sizeof(Packet),

@@ -8,15 +8,37 @@
 
 using namespace std;
 
-int main() {
-  // UDP object
-  UDP udp;
-  udp.openSocket();
-
+int main(int argc, char* argv[]) {
   // Welcome text
   cout << "\033[2J\033[1;1H"; //clear screen
   cout << "Bem-vindo ao Twix\n";
+
+  // Endereço do servidor
+  sockaddr_in serverAddress;
+  memset(&serverAddress, 0, sizeof(serverAddress));
+  serverAddress.sin_family = AF_INET;
+  serverAddress.sin_port = htons(PORT);
+
+  // Leitura do IP se não foi fornecido por parâmetro na inicialização
+  if(argc == 1){
+
+    string serverIP;
+
+    cout << "Digite o IP do servidor: ";
+    cin >> serverIP;
+
+    serverAddress.sin_addr.s_addr = inet_addr(serverIP.c_str());
+  }
+  else{
+    serverAddress.sin_addr.s_addr = inet_addr(argv[1]);
+  }
+
+  cout << "Server IP set to: " << serverAddress.sin_addr.s_addr << endl;
   
+  // UDP object
+  UDP udp(serverAddress);
+  udp.openSocket();
+
   // Leitura do nome do perfil com as restrições definidas na especificação do trabalho
   string name;
   while(name.empty()){

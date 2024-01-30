@@ -59,6 +59,7 @@ private:
 
 public:
   UDP();  // Inicializa estruturas
+  UDP(sockaddr_in address);
   ~UDP(); // Fecha o socket
 
   // Create socket file descriptor
