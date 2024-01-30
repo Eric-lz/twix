@@ -78,9 +78,6 @@ public:
   // Envia um packet de login com o perfil do usuario
   int login(const std::string name);
 
-  // Change address to listen TEST: verificar porque foi implementado se apagarmos, para em pe?
-  void changeAddr(const struct sockaddr_in inaddr);
-
   // Envia um pacote vazio
-  void ping();
+  void ping(sockaddr_in address);
 };

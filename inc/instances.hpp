@@ -20,4 +20,6 @@ public:
   // Retorna a porta de um perfil
   //TODO como resolver se o perfil tem mais de uma instancia?
   int getPort(std::string profile);
+
+  std::map<std::string, struct sockaddr_in> getInstances();
 };

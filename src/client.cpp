@@ -2,6 +2,7 @@
 #include <memory>
 #include <cstring>
 #include <ctime>
+#include <thread>
 
 #include "client.hpp"
 #include "udp.hpp"
@@ -70,6 +71,10 @@ int main(int argc, char* argv[]) {
   follow quatro
   */
 
+  // Thread que recebe pacotes e responde a pings
+  thread thReply(threadReply, &udp);
+
+  // Thread principal: trata leitura do teclado e envio de pacotes do usuario
   while(true){
     // Leitura da entrada do teclado
     cout << "> ";
@@ -124,7 +129,7 @@ PacketType cmdToEnum(string cmd){
   if(cmd == "UNFOLLOW" || cmd == "U")
     return UNFOLLOW;
   
-  if(cmd == "EXIT" || cmd == "QUIT") // TODO: CTRL + D ou CTRL + C não funcionam (impossível?)
+  if(cmd == "EXIT" || cmd == "QUIT") // TODO: CTRL+D ou CTRL+C não funcionam (impossível?)
     return QUIT;
 
   return UNKNOWN;
@@ -165,4 +170,28 @@ int envia(UDP& udp, PacketType type, string payload){
 
   // Envia o pacote
   return udp.envia(move(packet)); // move eh uma funcao que move o conteudo de um ponteiro para outro
+}
+
+// Recebe pacotes
+void threadReply(UDP* udp){
+  while(true){
+    // Endereço do remetente
+    sockaddr_in recvAddr;
+    memset(&recvAddr, 0, sizeof(recvAddr));
+
+    // Pacote recebido
+    cout << "escutando ping" << endl;
+    auto packet = udp->recebe(&recvAddr);
+    cout << "ping" << endl;
+
+    switch(packet->type){
+      case PING:
+        udp->envia(move(packet), &recvAddr);
+        cout << "pong" << endl;
+        break;
+    }
+
+    // run every 2 seconds
+    //sleep(2);
+  }
 }

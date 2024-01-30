@@ -19,3 +19,8 @@ int Instances::getPort(string profile){
   return instancesMap[profile].sin_port;
   //se mudar para multimap, como retornar a porta de uma instancia especifica?
 }
+
+std::map<std::string, struct sockaddr_in> Instances::getInstances(){
+  return instancesMap;
+  //se mudar para multimap, como retornar a porta de uma instancia especifica?
+}

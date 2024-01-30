@@ -34,6 +34,9 @@ int main() {
   // (usar mutex global é uma solução?)
   thread thEnvia(threadSession, udp, instances, notifications);
 
+  // Thread que verifica se o cliente ainda está com a sessão aberta (keep alive)
+  thread thKeepAlive(threadKeepAlive, udp, instances);
+
   //Thread que escuta o recebimento de mensagens
   while(true){
     // Endereco do cliente que enviou a mensagem
@@ -42,10 +45,12 @@ int main() {
 
     // Recebe pacote do cliente
     unique_ptr<Packet> packet;
-    packet = udp->recebe(&cliaddr); //udp recebe pacote e &cliaddr recebe endereco do cliente ip e porta
+    packet = udp->recebe(&cliaddr); //udp recebe pacote e &cliaddr recebe endereco do cliente
 
     // Lista de seguidores
     set<string> followers;
+
+    auto inst = instances->getInstances();
 
     // Ação do servidor baseada no tipo de packet recebido do cliente
     switch(packet->type){
@@ -59,6 +64,11 @@ int main() {
       // (pass UDP socket and server memory)
       //TODO: Implementar verificacao de quantidade de sessoes por perfil, nao podemos deixar o mesmo perfil ter mais de dois acessos simultaneos, se tentar acessar em 3 maquina o cliente recebe negativa
       instances->newInstance(packet->payload, cliaddr);
+      cout << "login from " << cliaddr.sin_addr.s_addr << endl;
+      inst = instances->getInstances();
+      for(auto i : inst){
+        cout << i.first << ": " << i.second.sin_port << endl;
+      }
       profiles->login(packet->payload);
       break;
 
@@ -125,5 +135,23 @@ void threadSession(UDP* udp, Instances* instances, Notifications* notifications)
 
     // Executa a thread de 1 em 1 segundo para não pinar a CPU em 100%
     sleep(1);
+  }
+}
+
+// Thread que envia pings periodicamente para verificar se os clientes ainda estão conectados
+void threadKeepAlive(UDP* udp, Instances* inst){
+  // send ping packet to every instance
+  while(true){
+    // get all instances
+    auto instances = inst->getInstances();
+    cout << "running isAlive" << endl;
+
+    for(auto i : instances){
+      cout << "pinging " << i.second.sin_addr.s_addr << endl;
+      udp->ping(i.second);
+    }
+
+    // run every 5 seconds
+    sleep(5);
   }
 }
