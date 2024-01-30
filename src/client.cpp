@@ -21,7 +21,6 @@ int main(int argc, char* argv[]) {
 
   // Leitura do IP se não foi fornecido por parâmetro na inicialização
   if(argc == 1){
-
     string serverIP;
 
     cout << "Digite o IP do servidor: ";
@@ -32,8 +31,6 @@ int main(int argc, char* argv[]) {
   else{
     serverAddress.sin_addr.s_addr = inet_addr(argv[1]);
   }
-
-  cout << "Server IP set to: " << serverAddress.sin_addr.s_addr << endl;
   
   // UDP object
   UDP udp(serverAddress);
@@ -127,8 +124,7 @@ PacketType cmdToEnum(string cmd){
   if(cmd == "UNFOLLOW" || cmd == "U")
     return UNFOLLOW;
   
-  if(cmd == "EXIT" || cmd == "QUIT" ||
-     cmd == "^C" || cmd == "^D") // TODO: CTRL + D ou CTRL + C não funcionam (é possível implementar?)
+  if(cmd == "EXIT" || cmd == "QUIT") // TODO: CTRL + D ou CTRL + C não funcionam (impossível?)
     return QUIT;
 
   return UNKNOWN;
