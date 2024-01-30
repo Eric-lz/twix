@@ -11,8 +11,11 @@ using namespace std;
 
 int Profiles::getProfileByName(string name){
   for(int i = 0; auto p : profiles){  // initializer in range-based for loop was introduced in C++23
-    if(p.name == name)
+    if(p.name == name){
+      cout << "getProfileByName=" << i << endl;
       return i;
+    }
+    i++;
   }
   
   return -1;
