@@ -1,3 +1,4 @@
+#include <iostream>
 #include <memory>
 #include <string>
 #include <cstring>
@@ -12,7 +13,16 @@ UDP::UDP(){
 
   servaddr.sin_family      = AF_INET;
   servaddr.sin_port        = htons(PORT);
-  servaddr.sin_addr.s_addr = INADDR_ANY; //TODO: colocar o endereco de ip do servior quando no modo cliente
+  servaddr.sin_addr.s_addr = INADDR_ANY; // modo servidor
+
+  /* set UDP recv timeout
+  struct timeval tv;
+  tv.tv_sec = 2;
+  tv.tv_usec = 0;
+  setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv));
+  */
+
+  cliaddr_len = sizeof(cliaddr);
 
   seqIn = 0;
   seqOut = 0;
@@ -21,6 +31,8 @@ UDP::UDP(){
 UDP::UDP(sockaddr_in address){
   memset(&cliaddr, 0, sizeof(cliaddr));
   servaddr = address;
+
+  cliaddr_len = sizeof(cliaddr);
 
   seqIn = 0;
   seqOut = 0;
@@ -75,8 +87,10 @@ int UDP::envia(unique_ptr<Packet> packet, struct sockaddr_in* outaddr){
 unique_ptr<Packet> UDP::recebe(struct sockaddr_in* inaddr){
   Packet* packet = new Packet; //ponteiro bruto
   //recvfrom eh uma funcao padrao de recebimento de pacotes UDP precisa de ponteiro bruto
-  recvfrom(sockfd, packet, sizeof(Packet), MSG_WAITALL,
+  int ret = recvfrom(sockfd, packet, sizeof(Packet), MSG_WAITALL,
           (struct sockaddr*) &cliaddr, &cliaddr_len);
+
+  cout << "UDP(" << ret << "): " << cliaddr.sin_addr.s_addr << endl;
 
   seqIn = packet->seqn;
 
@@ -103,17 +117,13 @@ int UDP::login(const string name){
   // Envia pacote
   return envia(move(packet));//ponteiro eh copiado para o envia e eh destruido no login
 }
-//TEST estamos usando esse metodo? Eric acha que nao, vamos apagar para ver se para em pe
-void UDP::changeAddr(const sockaddr_in inaddr){
-  servaddr = inaddr;
-  this->bindSocket();
-}
+
 //TODO: envia uma mesagem com o contedo "ping", mas ninguem responde ainda, temso que implementar para debug entre maquinas
-void UDP::ping(){
+void UDP::ping(sockaddr_in address){
   auto packet = make_unique<Packet>();
   packet->timestamp = time(NULL);
   packet->type = PING;
   strncpy(packet->payload, "ping", 5);
-  envia(move(packet));
+  envia(move(packet), &address);
 }
 
