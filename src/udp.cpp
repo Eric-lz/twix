@@ -90,8 +90,6 @@ unique_ptr<Packet> UDP::recebe(struct sockaddr_in* inaddr){
   int ret = recvfrom(sockfd, packet, sizeof(Packet), MSG_WAITALL,
           (struct sockaddr*) &cliaddr, &cliaddr_len);
 
-  cout << "UDP(" << ret << "): " << cliaddr.sin_addr.s_addr << endl;
-
   seqIn = packet->seqn;
 
   if(inaddr != nullptr){
