@@ -4,6 +4,7 @@
 #include <cstring>
 #include <algorithm>
 #include <ctime>
+#include <chrono>
 #include <set>
 
 #include "udp.hpp"
@@ -56,9 +57,6 @@ int main() {
     switch(packet->type){
     case PING: //TODO: esse metodo pode ser usado para validar conexao entre cliente e servidor, pq udp nao tem conceito de conexcao
       instances->setAlive(packet->profile);
-      cout << "ping from "; 
-      cout << inet_ntoa(cliaddr.sin_addr) << ":";
-      cout << cliaddr.sin_port << endl;
       break;
 
     case LOGIN:
@@ -145,22 +143,18 @@ void threadKeepAlive(UDP* udp, Instances* inst){
   while(true){
     // get all instances
     auto instances = inst->getInstances();
-    cout << "keepalive begin" << endl;
 
     // ping every instance
     for(auto i : instances){
       udp->ping(i.second);
-      cout << "pinging " << inet_ntoa(i.second.sin_addr) << ":";
-      cout << i.second.sin_port << endl;
     }
 
-    // wait for 1 second to receive pong from all instances 
-    sleep(1);
+    // wait for 400 ms to receive pong from all instances
+    this_thread::sleep_for(chrono::milliseconds(400));
 
     inst->checkAlive();
-    cout << "keepalive end;" << endl;
 
-    // wait for 3 seconds to perform next Keep Alive check
-    sleep(3);
+    // wait for 2 seconds to perform next Keep Alive check
+    this_thread::sleep_for(chrono::seconds(2));
   }
 }

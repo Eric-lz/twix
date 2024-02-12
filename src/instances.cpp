@@ -48,9 +48,6 @@ void Instances::checkAlive(){
       closeInstance(i.first, i.second);
       cout << i.first << " is dead, session closed" << endl;;
     }
-    else{
-      cout << i.first << " is alive!" << endl;
-    }
   }
 
   keepAliveMap.clear();
