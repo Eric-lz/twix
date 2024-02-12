@@ -55,7 +55,10 @@ int main() {
     // Ação do servidor baseada no tipo de packet recebido do cliente
     switch(packet->type){
     case PING: //TODO: esse metodo pode ser usado para validar conexao entre cliente e servidor, pq udp nao tem conceito de conexcao
-      cout << "ping from " << cliaddr.sin_port << endl;
+      instances->setAlive(packet->profile);
+      cout << "ping from "; 
+      cout << inet_ntoa(cliaddr.sin_addr) << ":";
+      cout << cliaddr.sin_port << endl;
       break;
 
     case LOGIN:
@@ -64,12 +67,10 @@ int main() {
       // (pass UDP socket and server memory)
       //TODO: Implementar verificacao de quantidade de sessoes por perfil, nao podemos deixar o mesmo perfil ter mais de dois acessos simultaneos, se tentar acessar em 3 maquina o cliente recebe negativa
       instances->newInstance(packet->payload, cliaddr);
-      cout << "login from " << cliaddr.sin_addr.s_addr << endl;
       inst = instances->getInstances();
-      for(auto i : inst){
-        cout << i.first << ": " << i.second.sin_port << endl;
-      }
       profiles->login(packet->payload);
+      cout << packet->payload << " logged in from ";
+      cout << inet_ntoa(cliaddr.sin_addr) << endl;
       break;
 
     case FOLLOW:
@@ -144,14 +145,22 @@ void threadKeepAlive(UDP* udp, Instances* inst){
   while(true){
     // get all instances
     auto instances = inst->getInstances();
-    cout << "running isAlive" << endl;
+    cout << "keepalive begin" << endl;
 
+    // ping every instance
     for(auto i : instances){
-      cout << "pinging " << i.second.sin_addr.s_addr << endl;
       udp->ping(i.second);
+      cout << "pinging " << inet_ntoa(i.second.sin_addr) << ":";
+      cout << i.second.sin_port << endl;
     }
 
-    // run every 5 seconds
-    sleep(5);
+    // wait for 1 second to receive pong from all instances 
+    sleep(1);
+
+    inst->checkAlive();
+    cout << "keepalive end;" << endl;
+
+    // wait for 3 seconds to perform next Keep Alive check
+    sleep(3);
   }
 }

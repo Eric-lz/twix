@@ -172,7 +172,9 @@ int envia(UDP& udp, PacketType type, string payload){
   return udp.envia(move(packet)); // move eh uma funcao que move o conteudo de um ponteiro para outro
 }
 
-// Recebe pacotes
+// Recebe e responde pacotes de ping
+// TODO: receber pacotes em apenas uma thread (talvez na principal) e usar essa
+// apenas para enviar um pacote de resposta do ping
 void threadReply(UDP* udp){
   while(true){
     // Endereço do remetente
@@ -180,14 +182,11 @@ void threadReply(UDP* udp){
     memset(&recvAddr, 0, sizeof(recvAddr));
 
     // Pacote recebido
-    cout << "escutando ping" << endl;
     auto packet = udp->recebe(&recvAddr);
-    cout << "ping" << endl;
 
     switch(packet->type){
       case PING:
         udp->envia(move(packet), &recvAddr);
-        cout << "pong" << endl;
         break;
     }
 

@@ -1,3 +1,6 @@
+// debug
+#include <iostream>
+
 #include <string>
 #include <map>
 
@@ -7,6 +10,7 @@ using namespace std;
 
 void Instances::newInstance(string profile, sockaddr_in cliaddr){
   instancesMap[profile] = cliaddr;
+  setAlive(profile);
 }
 
 void Instances::closeInstance(string profile, sockaddr_in cliaddr){
@@ -18,6 +22,38 @@ void Instances::closeInstance(string profile, sockaddr_in cliaddr){
 int Instances::getPort(string profile){
   return instancesMap[profile].sin_port;
   //se mudar para multimap, como retornar a porta de uma instancia especifica?
+}
+
+void Instances::setAlive(string profile){
+  keepAliveMap.push_back(profile);
+}
+
+void Instances::clearAlive(){
+  keepAliveMap.clear();
+}
+
+void Instances::checkAlive(){
+  // close every instance that didn't respond to the ping
+  // (isn't on the keepAliveMap)
+
+  for(auto i : instancesMap){
+    bool found = false;
+
+    for(size_t j = 0; j < keepAliveMap.size(); j++){
+      if(i.first == keepAliveMap[j])
+        found = true;
+    }
+
+    if(!found){
+      closeInstance(i.first, i.second);
+      cout << i.first << " is dead, session closed" << endl;;
+    }
+    else{
+      cout << i.first << " is alive!" << endl;
+    }
+  }
+
+  keepAliveMap.clear();
 }
 
 std::map<std::string, struct sockaddr_in> Instances::getInstances(){
