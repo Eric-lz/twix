@@ -7,7 +7,9 @@
 
 // Classe usada para gerenciar as instancias (ou sessoes) dos clients
 class Instances{
-private: 
+private:
+  // Alterar map para multimap para poder salvar duas instancias por perfil?
+  // Usar um map <perfil, semaforo(2)> para limitar até duas instancias? 
   std::map<std::string, struct sockaddr_in> instancesMap;
   std::vector<std::string> keepAliveMap;
 
@@ -27,5 +29,6 @@ public:
   // Remove da lista de instancias aquelas que não estão em keepAliveMap
   void checkAlive();
 
+  // Retorna lista de instancias
   std::map<std::string, struct sockaddr_in> getInstances();
 };
