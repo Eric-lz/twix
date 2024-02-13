@@ -67,6 +67,7 @@ int main() {
     case FOLLOW:
       // Adiciona seguidor
       profiles->addFollow(packet->profile, packet->payload);
+      // TODO: informar cliente quando perfil não existe
       break;
 
     case UNFOLLOW:

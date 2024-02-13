@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
   cout << "\033[2J\033[1;1H"; //clear screen
   cout << "Logado como " << name << '\n';
   cout << "Cada mensagem deve conter no max 140 caracteres \n";
-  cout << "Comandos: SEND msg | FOLLOW profile | UNFOLLOW profile" << endl;
+  cout << "Comandos: SEND msg | FOLLOW profile | UNFOLLOW profile | QUIT / EXIT" << endl;
   /*comandos tb aceitam somente a letra inicial do comando e nao eh necessario usar capslock
   EXEMPLO DE ENTRADA VALIDA ESPERADA:
   SEND ola!
@@ -211,12 +211,12 @@ int envia(UDP& udp, PacketType type, string payload){
   return udp.envia(move(packet)); // move eh uma funcao que move o conteudo de um ponteiro para outro
 }
 
+// Informa ao servidor que esta sessão desconectou
 int logout(UDP& udp){
-  // cria packet
+  // Cria pacote
   auto packet = make_unique<Packet>();
-
   packet->type = LOGOUT;
-  strncpy(packet->payload, "logout", MAXLEN); //MAXLEN que limita os 140 caract. implementado em udp.hpp
+  strncpy(packet->payload, "logout", MAXLEN);
 
   // Envia o pacote
   return udp.envia(move(packet));
