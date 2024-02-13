@@ -190,7 +190,7 @@ void threadReply(UDP* udp){
         break;
       
       case SEND:
-        cout << "Mensagem de " << packet->profile;
+        cout << packet->profile;
         cout << ": " << packet->payload << "\n> " << flush;
         break;
 

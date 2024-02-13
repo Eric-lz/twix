@@ -120,21 +120,22 @@ void threadSession(UDP* udp, Instances* instances, Notifications* notifications)
 
         //PROXIMOS PASSOS:
         //TODO: se instancia não existir, guarda notificação e não envia
-        auto notif = notifications->getNotifByID(notif_it->second);
+        auto notifToSend = notifications->getNotifByID(notif_it->second);
 
         // build packet
         auto packet = make_unique<Packet>();
-        strncpy(packet->payload, notif.message, MAXLEN);
+        strncpy(packet->payload, notifToSend.message, MAXLEN);
         packet->type = SEND;
 
         // address to send notification
         sockaddr_in cliaddr = instances->getPort(notif_it->first);
 
-        // if(cliaddr.port == 0) ....
-
-        udp->envia(move(packet), &cliaddr, notif.sender);
-
-        notifications->deleteNotif(notif_it);
+        // se instancia possui um endereco valido (diferente de zero)
+        // envia a notificação e remove da lista de pendentes
+        if(cliaddr.sin_addr.s_addr != 0){
+          udp->envia(move(packet), &cliaddr, notifToSend.sender);
+          notifications->deleteNotif(notif_it);
+        }
       }
     }
 

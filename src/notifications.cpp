@@ -58,10 +58,7 @@ Notification Notifications::getNotifByID(unsigned int notif_id){
 }
 
 void Notifications::deleteNotif(multimap<string, unsigned int>::iterator it){
-  mutex m;
-  m.lock();
   // pending_notifs.erase(it);
   //TODO: alterar para apagar somente a notificacao do perfil que esta lendo
-  pending_notifs.clear();
-  m.unlock();
+  pending_notifs.erase(it->first);
 }
