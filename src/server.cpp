@@ -88,6 +88,10 @@ int main() {
       notifications->newMessage(move(packet), followers);//prepara noticacao para enviar para seguidores
       break;
 
+    case LOGOUT:
+      instances->closeInstance(packet->profile, cliaddr);
+      break;
+
     default:
       perror("unknown packet type");
       break;

@@ -100,9 +100,9 @@ int main(int argc, char* argv[]) {
       envia(udp, command, arg);
       break;
 
-    case QUIT:
-      cout << "quit" << endl;
+    case LOGOUT:
       // TODO: envia sinal para o servidor fechar a sessão
+      logout(udp);
       exit(0);
       break;
 
@@ -113,6 +113,33 @@ int main(int argc, char* argv[]) {
   }
 
   return 0;
+}
+
+// Thread que recebe notificacoes e imprime na tela
+// Também repsonde mensagens de ping
+void threadReply(UDP* udp){
+  while(true){
+    // Endereço do remetente
+    sockaddr_in recvAddr;
+    memset(&recvAddr, 0, sizeof(recvAddr));
+
+    // Pacote recebido
+    auto packet = udp->recebe(&recvAddr);
+
+    switch(packet->type){
+      case PING:
+        udp->envia(move(packet), &recvAddr);
+        break;
+      
+      case SEND:
+        cout << packet->profile << ": ";
+        cout << packet->payload << "\n> " << flush;
+        break;
+
+      default:
+        cout << "unknown action" << endl;
+    }
+  }
 }
 
 /* Como cada comando pode ser digitado de varias formas pelo usuario,
@@ -130,7 +157,7 @@ PacketType cmdToEnum(string cmd){
     return UNFOLLOW;
   
   if(cmd == "EXIT" || cmd == "QUIT") // TODO: CTRL+D ou CTRL+C não funcionam (impossível?)
-    return QUIT;
+    return LOGOUT;
 
   return UNKNOWN;
 }
@@ -172,30 +199,15 @@ int envia(UDP& udp, PacketType type, string payload){
   return udp.envia(move(packet)); // move eh uma funcao que move o conteudo de um ponteiro para outro
 }
 
-// Recebe e responde pacotes de ping
-// TODO: receber pacotes em apenas uma thread (talvez na principal) e usar essa
-// apenas para enviar um pacote de resposta do ping
-void threadReply(UDP* udp){
-  while(true){
-    // Endereço do remetente
-    sockaddr_in recvAddr;
-    memset(&recvAddr, 0, sizeof(recvAddr));
+int logout(UDP& udp){
+  // cria packet
+  auto packet = make_unique<Packet>();
 
-    // Pacote recebido
-    auto packet = udp->recebe(&recvAddr);
+  packet->timestamp = time(NULL); //TEST: caso de erro na ordem de cronologia das mensagens, verificar se o timestamp esta sendo preenchido corretamente 
+  packet->type = LOGOUT;
+  strncpy(packet->payload, "logout", MAXLEN); //MAXLEN que limita os 140 caract. implementado em udp.hpp
+  packet->length = strnlen(packet->payload, MAXLEN);
 
-    switch(packet->type){
-      case PING:
-        udp->envia(move(packet), &recvAddr);
-        break;
-      
-      case SEND:
-        cout << packet->profile;
-        cout << ": " << packet->payload << "\n> " << flush;
-        break;
-
-      default:
-        cout << "unknown action" << endl;
-    }
-  }
+  // Envia o pacote
+  return udp.envia(move(packet));
 }

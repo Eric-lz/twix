@@ -17,12 +17,12 @@
 
 // Tipo do pacote (ex. DATA, CMD)
 enum PacketType{
-  PING, //TODO: ainda n implementado, SERVIDOR deve enviar um ack para o cliente
-  LOGIN, //ajuda servidor a identificar quantidade de sessoes do cliente
+  PING,
+  LOGIN,
   FOLLOW,
   UNFOLLOW,
   SEND,
-  QUIT,//TODO: ainda n implementado, CLIENTE deve enviar um sinal que uma sessao foi encerrada para o servidor
+  LOGOUT,//TODO: ainda n implementado, CLIENTE deve enviar um sinal que uma sessao foi encerrada para o servidor
   UNKNOWN
 };
 

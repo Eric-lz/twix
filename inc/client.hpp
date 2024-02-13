@@ -7,4 +7,5 @@
 
 PacketType cmdToEnum(std::string cmd);
 int envia(UDP &udp, PacketType type, std::string payload);
+int logout(UDP &udp);
 void threadReply(UDP* udp);
