@@ -21,7 +21,7 @@ public:
   
   // Retorna a porta de um perfil
   //TODO como resolver se o perfil tem mais de uma instancia?
-  int getPort(std::string profile);
+  struct sockaddr_in getPort(std::string profile);
 
   // Adiciona uma instancia na lista de keep alive
   void setAlive(std::string profile);

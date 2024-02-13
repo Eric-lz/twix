@@ -19,8 +19,8 @@ void Instances::closeInstance(string profile, sockaddr_in cliaddr){
   // talvez mudar estrutura para multimap
 }
 
-int Instances::getPort(string profile){
-  return instancesMap[profile].sin_port;
+struct sockaddr_in Instances::getPort(string profile){
+  return instancesMap[profile];
   //se mudar para multimap, como retornar a porta de uma instancia especifica?
 }
 
@@ -40,6 +40,7 @@ void Instances::checkAlive(){
     bool found = false;
 
     for(size_t j = 0; j < keepAliveMap.size(); j++){
+      // cout << i.first << " == " << keepAliveMap[j] << endl;
       if(i.first == keepAliveMap[j])
         found = true;
     }

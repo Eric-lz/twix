@@ -69,7 +69,7 @@ public:
   int bindSocket();
 
   // Envia um packet para o socket aberto, recebe pacote do move, opcionalmente passa o endereco de envio do pacote se nao passar o cliente envia automaticamente
-  int envia(std::unique_ptr<Packet> packet, struct sockaddr_in* outaddr = nullptr);
+  int envia(std::unique_ptr<Packet> packet, struct sockaddr_in* outaddr = nullptr, const char* sender = nullptr);
 
   // Recebe packet do socket aberto
   // (optional) inaddr: returns the address of the client

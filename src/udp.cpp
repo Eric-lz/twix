@@ -63,7 +63,7 @@ int UDP::bindSocket(){
 }
 
 // Envia um packet para o socket aberto
-int UDP::envia(unique_ptr<Packet> packet, struct sockaddr_in* outaddr){
+int UDP::envia(unique_ptr<Packet> packet, struct sockaddr_in* outaddr, const char* sender){
   packet->seqn = seqOut++;
   struct sockaddr_in addr;
 
@@ -75,8 +75,11 @@ int UDP::envia(unique_ptr<Packet> packet, struct sockaddr_in* outaddr){
     addr = servaddr;
   
   // Envia o nome do perfil que enviou a mensagem
-  strncpy(packet->profile, name.c_str(), 20);
-  
+  if(sender != nullptr)
+    strncpy(packet->profile, sender, 20);
+  else
+    strncpy(packet->profile, name.c_str(), 20);
+
   //Funcao padrao de envio por UDP
   return sendto(sockfd, packet.get(), sizeof(Packet),
         MSG_CONFIRM, (struct sockaddr*) &addr,
@@ -87,7 +90,7 @@ int UDP::envia(unique_ptr<Packet> packet, struct sockaddr_in* outaddr){
 unique_ptr<Packet> UDP::recebe(struct sockaddr_in* inaddr){
   Packet* packet = new Packet; //ponteiro bruto
   //recvfrom eh uma funcao padrao de recebimento de pacotes UDP precisa de ponteiro bruto
-  int ret = recvfrom(sockfd, packet, sizeof(Packet), MSG_WAITALL,
+  recvfrom(sockfd, packet, sizeof(Packet), MSG_WAITALL,
           (struct sockaddr*) &cliaddr, &cliaddr_len);
 
   seqIn = packet->seqn;

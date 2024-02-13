@@ -188,6 +188,14 @@ void threadReply(UDP* udp){
       case PING:
         udp->envia(move(packet), &recvAddr);
         break;
+      
+      case SEND:
+        cout << "Mensagem de " << packet->profile;
+        cout << ": " << packet->payload << "\n> " << flush;
+        break;
+
+      default:
+        cout << "unknown action" << endl;
     }
 
     // run every 2 seconds

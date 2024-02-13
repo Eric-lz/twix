@@ -68,7 +68,7 @@ int main() {
       inst = instances->getInstances();
       profiles->login(packet->payload);
       cout << packet->payload << " logged in from ";
-      cout << inet_ntoa(cliaddr.sin_addr) << endl;
+      cout << inet_ntoa(cliaddr.sin_addr) << cliaddr.sin_port << endl;
       break;
 
     case FOLLOW:
@@ -115,19 +115,25 @@ void threadSession(UDP* udp, Instances* instances, Notifications* notifications)
           Você pode acessar a chave com notif_it->first e o valor com notif_it->second.
         */
 
-        // consume notification
-        //No momento funcao esta no modo debug, so imprime na tela
         cout << "send notif.id " << notif_it->second << " to "; // second é o id da notificacao
         cout << notif_it->first << endl; // first é o perfil que vai receber a notificacao
 
         //PROXIMOS PASSOS:
-        //TODO: get notification
-        //TODO: auto notif = notifications->getNotifByID(notif_it->second);
+        //TODO: se instancia não existir, guarda notificação e não envia
+        auto notif = notifications->getNotifByID(notif_it->second);
 
-        //TODO: build packet
-        //TODO: unique_ptr<Packet> packet;
+        // build packet
+        auto packet = make_unique<Packet>();
+        strncpy(packet->payload, notif.message, MAXLEN);
+        packet->type = SEND;
 
-        // DEBUG: consume notification (remove all notifications)
+        // address to send notification
+        sockaddr_in cliaddr = instances->getPort(notif_it->first);
+
+        // if(cliaddr.port == 0) ....
+
+        udp->envia(move(packet), &cliaddr, notif.sender);
+
         notifications->deleteNotif(notif_it);
       }
     }
@@ -146,6 +152,8 @@ void threadKeepAlive(UDP* udp, Instances* inst){
 
     // ping every instance
     for(auto i : instances){
+      // cout << "Pinging " << i.first << " at ";
+      // cout << inet_ntoa(i.second.sin_addr) << ':' << i.second.sin_port << endl;
       udp->ping(i.second);
     }
 
