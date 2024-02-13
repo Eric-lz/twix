@@ -45,19 +45,20 @@ int main() {
 
     // Recebe pacote do cliente
     unique_ptr<Packet> packet;
-    packet = udp->recebe(&cliaddr); //udp recebe pacote e &cliaddr recebe endereco do cliente
+    packet = udp->recebe(&cliaddr); // packet recebe pacote e &cliaddr recebe endereco do cliente
 
     // Lista de seguidores
     set<string> followers;
 
     // Ação do servidor baseada no tipo de packet recebido do cliente
+    // TODO: enviar confirmação das ações para o cliente
     switch(packet->type){
     case PING: // Usado para criar "conexão" entre cliente e servidor
       instances->setAlive(packet->profile);
       break;
 
     case LOGIN:
-      //TODO: Implementar verificacao de quantidade de sessoes por perfil, nao podemos deixar o mesmo perfil ter mais de dois acessos simultaneos, se tentar acessar em 3 maquina o cliente recebe negativa
+      //TODO: Implementar numero de sessoes por perfil (máximo 2 instancias)
       instances->newInstance(packet->payload, cliaddr);
       profiles->login(packet->payload);
       cout << packet->payload << " logged in from ";
@@ -67,7 +68,7 @@ int main() {
     case FOLLOW:
       // Adiciona seguidor
       profiles->addFollow(packet->profile, packet->payload);
-      // TODO: informar cliente quando perfil não existe
+      // TODO: informar cliente se perfil não existe
       break;
 
     case UNFOLLOW:

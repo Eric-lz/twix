@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
   cout << "\033[2J\033[1;1H"; //clear screen
   cout << "Logado como " << name << '\n';
   cout << "Cada mensagem deve conter no max 140 caracteres \n";
-  cout << "Comandos: SEND msg | FOLLOW profile | UNFOLLOW profile | QUIT / EXIT" << endl;
+  cout << "Comandos: SEND msg | FOLLOW profile | UNFOLLOW profile | QUIT" << endl;
   /*comandos tb aceitam somente a letra inicial do comando e nao eh necessario usar capslock
   EXEMPLO DE ENTRADA VALIDA ESPERADA:
   SEND ola!
