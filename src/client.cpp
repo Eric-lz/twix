@@ -197,8 +197,5 @@ void threadReply(UDP* udp){
       default:
         cout << "unknown action" << endl;
     }
-
-    // run every 2 seconds
-    //sleep(2);
   }
 }

@@ -115,8 +115,8 @@ void threadSession(UDP* udp, Instances* instances, Notifications* notifications)
           Você pode acessar a chave com notif_it->first e o valor com notif_it->second.
         */
 
-        cout << "send notif.id " << notif_it->second << " to "; // second é o id da notificacao
-        cout << notif_it->first << endl; // first é o perfil que vai receber a notificacao
+        // cout << "send notif.id " << notif_it->second << " to "; // second é o id da notificacao
+        // cout << notif_it->first << endl; // first é o perfil que vai receber a notificacao
 
         //PROXIMOS PASSOS:
         //TODO: se instancia não existir, guarda notificação e não envia
@@ -135,6 +135,8 @@ void threadSession(UDP* udp, Instances* instances, Notifications* notifications)
         if(cliaddr.sin_addr.s_addr != 0){
           udp->envia(move(packet), &cliaddr, notifToSend.sender);
           notifications->deleteNotif(notif_it);
+          cout << "send notif.id " << notif_it->second << " to ";
+          cout << notif_it->first << endl;
         }
       }
     }
