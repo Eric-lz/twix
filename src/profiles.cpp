@@ -50,8 +50,8 @@ int Profiles::addFollow(string follower, string following){
 
 void Profiles::unFollow(string follower, string following){
   // Se encontrar seguidor, remove da lista (tratado automaticamente pelo erase())
-  int i = getProfileByName(follower);
-  profiles.at(i).followers.erase(following);
+  int i = getProfileByName(following);
+  profiles.at(i).followers.erase(follower);
 
   cout << follower << " no longer follows ";
   cout << following << endl;
