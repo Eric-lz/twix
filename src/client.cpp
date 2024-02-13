@@ -132,8 +132,7 @@ void threadReply(UDP* udp){
         break;
       
       case SEND:
-        cout << packet->profile << ": ";
-        cout << packet->payload << "\n> " << flush;
+        printNotif(move(packet));
         break;
 
       default:
@@ -160,6 +159,21 @@ PacketType cmdToEnum(string cmd){
     return LOGOUT;
 
   return UNKNOWN;
+}
+
+// Imprime notificacao na tela
+void printNotif(unique_ptr<Packet> notif){
+  // converte timestamp para ASCII
+  time_t rawtime = notif->timestamp;
+  struct tm *time = localtime(&rawtime);
+
+  char timebuffer[80];
+
+  strftime(timebuffer,sizeof(timebuffer),"%d/%m/%Y %H:%M:%S",time);
+
+  cout << timebuffer << ' ';
+  cout << notif->profile << ": ";
+  cout << notif->payload << "\n> " << flush;
 }
 
 // Envia um pacote via UDP de tipo TYPE com mensagem PAYLOAD
@@ -190,10 +204,9 @@ int envia(UDP& udp, PacketType type, string payload){
       payload.insert(0, 1, '@');
 
   // Preenche os campos do packet
-  packet->timestamp = time(NULL); //TEST: caso de erro na ordem de cronologia das mensagens, verificar se o timestamp esta sendo preenchido corretamente 
+  packet->timestamp = time(nullptr);
   packet->type = type;
   strncpy(packet->payload, payload.c_str(), MAXLEN); //MAXLEN que limita os 140 caract. implementado em udp.hpp
-  packet->length = strnlen(packet->payload, MAXLEN);
 
   // Envia o pacote
   return udp.envia(move(packet)); // move eh uma funcao que move o conteudo de um ponteiro para outro
@@ -203,10 +216,8 @@ int logout(UDP& udp){
   // cria packet
   auto packet = make_unique<Packet>();
 
-  packet->timestamp = time(NULL); //TEST: caso de erro na ordem de cronologia das mensagens, verificar se o timestamp esta sendo preenchido corretamente 
   packet->type = LOGOUT;
   strncpy(packet->payload, "logout", MAXLEN); //MAXLEN que limita os 140 caract. implementado em udp.hpp
-  packet->length = strnlen(packet->payload, MAXLEN);
 
   // Envia o pacote
   return udp.envia(move(packet));

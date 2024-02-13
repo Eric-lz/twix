@@ -28,10 +28,6 @@ void Instances::setAlive(string profile){
   keepAliveMap.push_back(profile);
 }
 
-void Instances::clearAlive(){
-  keepAliveMap.clear();
-}
-
 void Instances::checkAlive(){
   // close every instance that didn't respond to the ping
   // (isn't on the keepAliveMap)

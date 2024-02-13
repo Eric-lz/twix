@@ -128,8 +128,9 @@ void threadSession(UDP* udp, Instances* instances, Notifications* notifications)
 
         // build packet
         auto packet = make_unique<Packet>();
-        strncpy(packet->payload, notifToSend.message, MAXLEN);
+        packet->timestamp = notifToSend.timestamp;
         packet->type = SEND;
+        strncpy(packet->payload, notifToSend.message, MAXLEN);
 
         // address to send notification
         sockaddr_in cliaddr = instances->getPort(notif_it->first);

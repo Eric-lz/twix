@@ -15,13 +15,6 @@ UDP::UDP(){
   servaddr.sin_port        = htons(PORT);
   servaddr.sin_addr.s_addr = INADDR_ANY; // modo servidor
 
-  /* set UDP recv timeout
-  struct timeval tv;
-  tv.tv_sec = 2;
-  tv.tv_usec = 0;
-  setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv));
-  */
-
   cliaddr_len = sizeof(cliaddr);
 
   seqIn = 0;
@@ -64,7 +57,10 @@ int UDP::bindSocket(){
 
 // Envia um packet para o socket aberto
 int UDP::envia(unique_ptr<Packet> packet, struct sockaddr_in* outaddr, const char* sender){
+  // Preenche campos restantes do UDP
   packet->seqn = seqOut++;
+  //packet->timestamp = time(nullptr);
+  packet->length = strnlen(packet->payload, MAXLEN);
   struct sockaddr_in addr;
 
   // Se for indicado um enderco, enviar pacote para ele (servidor -> cliente)
@@ -110,7 +106,6 @@ int UDP::login(const string name){
   this->name = name; //troca o nome da classe UDP o string name mais especificamente, ajuda na identificação de sessoes do cliente
 
   // Monta pacote de login
-  packet->timestamp = time(NULL);
   packet->type = LOGIN;
   strncpy(packet->payload, name.c_str(), 20);//TEST: verificar se o lenght contempla o @ do perfil, exemplo @victortresvictortres sera aceito? Tem @ + 20 caracteres
   packet->length = strnlen(packet->payload, 20);
@@ -122,7 +117,6 @@ int UDP::login(const string name){
 //TODO: envia uma mesagem com o contedo "ping", mas ninguem responde ainda, temso que implementar para debug entre maquinas
 void UDP::ping(sockaddr_in address){
   auto packet = make_unique<Packet>();
-  packet->timestamp = time(NULL);
   packet->type = PING;
   strncpy(packet->payload, "ping", 5);
   envia(move(packet), &address);

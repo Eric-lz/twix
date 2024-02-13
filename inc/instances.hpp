@@ -29,8 +29,6 @@ public:
   // Remove da lista de instancias aquelas que não estão em keepAliveMap
   void checkAlive();
 
-  // Limpa a lista de keep alive
-  void clearAlive();
 
   std::map<std::string, struct sockaddr_in> getInstances();
 };
