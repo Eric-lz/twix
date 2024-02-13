@@ -27,10 +27,10 @@ int main(int argc, char* argv[]) {
     cout << "Digite o IP do servidor: ";
     cin >> serverIP;
 
-    serverAddress.sin_addr.s_addr = inet_addr(serverIP.c_str());
+    inet_aton(serverIP.c_str(), &serverAddress.sin_addr);
   }
   else{
-    serverAddress.sin_addr.s_addr = inet_addr(argv[1]);
+    inet_aton(argv[1], &serverAddress.sin_addr);
   }
   
   // UDP object
@@ -101,9 +101,8 @@ int main(int argc, char* argv[]) {
       break;
 
     case LOGOUT:
-      // TODO: envia sinal para o servidor fechar a sessão
       logout(udp);
-      exit(0);
+      exit(EXIT_SUCCESS);
       break;
 
     default:
@@ -127,15 +126,15 @@ void threadReply(UDP* udp){
     auto packet = udp->recebe(&recvAddr);
 
     switch(packet->type){
-      case PING:
+      case PING:  // se for ping, envia resposta de volta
         udp->envia(move(packet), &recvAddr);
         break;
       
-      case SEND:
+      case SEND:  // se for notificação, printa
         printNotif(move(packet));
         break;
 
-      default:
+      default:    // nunca deve chegar nesse ponto
         cout << "unknown action" << endl;
     }
   }
@@ -166,11 +165,11 @@ void printNotif(unique_ptr<Packet> notif){
   // converte timestamp para ASCII
   time_t rawtime = notif->timestamp;
   struct tm *time = localtime(&rawtime);
+  char timebuffer[30];
 
-  char timebuffer[80];
+  strftime(timebuffer, sizeof(timebuffer), "%d/%m/%Y %H:%M:%S", time);
 
-  strftime(timebuffer,sizeof(timebuffer),"%d/%m/%Y %H:%M:%S",time);
-
+  // Printa notificação
   cout << timebuffer << ' ';
   cout << notif->profile << ": ";
   cout << notif->payload << "\n> " << flush;

@@ -68,7 +68,7 @@ int main() {
       inst = instances->getInstances();
       profiles->login(packet->payload);
       cout << packet->payload << " logged in from ";
-      cout << inet_ntoa(cliaddr.sin_addr) << cliaddr.sin_port << endl;
+      cout << inet_ntoa(cliaddr.sin_addr) << ':' << cliaddr.sin_port << endl;
       break;
 
     case FOLLOW:
@@ -119,11 +119,6 @@ void threadSession(UDP* udp, Instances* instances, Notifications* notifications)
           Você pode acessar a chave com notif_it->first e o valor com notif_it->second.
         */
 
-        // cout << "send notif.id " << notif_it->second << " to "; // second é o id da notificacao
-        // cout << notif_it->first << endl; // first é o perfil que vai receber a notificacao
-
-        //PROXIMOS PASSOS:
-        //TODO: se instancia não existir, guarda notificação e não envia
         auto notifToSend = notifications->getNotifByID(notif_it->second);
 
         // build packet
@@ -140,14 +135,14 @@ void threadSession(UDP* udp, Instances* instances, Notifications* notifications)
         if(cliaddr.sin_addr.s_addr != 0){
           udp->envia(move(packet), &cliaddr, notifToSend.sender);
           notifications->deleteNotif(notif_it);
-          cout << "send notif.id " << notif_it->second << " to ";
+          cout << "sending notif_id " << notif_it->second << " to ";
           cout << notif_it->first << endl;
         }
       }
     }
 
     // Executa a thread de 1 em 1 segundo para não pinar a CPU em 100%
-    sleep(1);
+    this_thread::sleep_for(chrono::seconds(1));
   }
 }
 
@@ -168,6 +163,7 @@ void threadKeepAlive(UDP* udp, Instances* inst){
     // wait for 400 ms to receive pong from all instances
     this_thread::sleep_for(chrono::milliseconds(400));
 
+    // check which instances are still alive
     inst->checkAlive();
 
     // wait for 2 seconds to perform next Keep Alive check

@@ -43,7 +43,7 @@ void Instances::checkAlive(){
 
     if(!found){
       closeInstance(i.first, i.second);
-      cout << i.first << " is dead." << endl;;
+      cout << i.first << " is offline." << endl;;
     }
   }
 

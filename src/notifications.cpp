@@ -39,7 +39,7 @@ void Notifications::newMessage(unique_ptr<Packet> packet, set<string> followers)
   for(string follower : followers)
     pending_notifs.insert(pair<string, unsigned> (follower, notif.id));
 
-  cout << "id: " << notif.id << ' ';
+  cout << "notif_id=" << notif.id << ' ';
   cout << packet->profile << ": ";
   cout << notif.message << endl;
 }
