@@ -27,7 +27,7 @@ public:
   void login(std::string profile);
 
   // Segue novo perfil
-  void addFollow(std::string follower, std::string following);
+  int addFollow(std::string follower, std::string following);
 
   // Para de seguir um perfil
   void unFollow(std::string follower, std::string following);

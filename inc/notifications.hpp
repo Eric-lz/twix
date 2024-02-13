@@ -21,9 +21,7 @@ typedef struct notification_t{
 class Notifications{
 private:
   std::vector<Notification> notifications;
-  std::multimap<std::string, unsigned int> pending_notifs;//chave eh o nome do perfil e as notificaoes pedentendes sao as que ele deve receber
-  //TODO: aprofundar estudo no Multimap para entender como funciona
-  //TEST: validar como eh feita ordem das notificaoes pendentes, por timsstamp ou chegada no multimap?
+  std::multimap<std::string, unsigned int> pending_notifs;  // Chave eh o nome do perfil e os valores sao as notificacoes que ele deve receber
   unsigned int notif_id;
 
 public:
@@ -44,5 +42,4 @@ public:
 
   // Remove uma notificação da lista 
   void deleteNotif(std::multimap<std::string, unsigned int>::iterator it);
-  //TEST: revisar implementacao do metodo deleteNotif
 };

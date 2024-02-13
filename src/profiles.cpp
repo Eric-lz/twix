@@ -20,8 +20,8 @@ int Profiles::getProfileByName(string name){
   return -1;
 }
 
+// Se o perfil não existe na lista, cria
 void Profiles::login(string profile){
-  // Se o perfil não existe na lista, cria
   if(getProfileByName(profile) < 0){
     Profile p;
     p.name = profile;
@@ -30,17 +30,21 @@ void Profiles::login(string profile){
   }
 }
 
-void Profiles::addFollow(string follower, string following){
+// Adiciona um seguidor a um perfil (follower está seguindo following)
+// Retorna 
+int Profiles::addFollow(string follower, string following){
   // Se encontrar perfil a ser seguido, adicionar na lista de seguidores dele
   int i = getProfileByName(following);
 
   if(i < 0){
     cout << "profile " << following << " does not exist!" << endl;
+    return -1;
   }
   else{
     profiles.at(i).followers.insert(follower);
     cout << follower << " now follows ";
     cout << following << endl;
+    return 0;
   }
 }
 

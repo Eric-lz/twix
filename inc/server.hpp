@@ -6,4 +6,3 @@
 
 void threadSession(UDP* udp, Instances* instances, Notifications* notifications);
 void threadKeepAlive(UDP* udp, Instances* inst);
-//void threadEnvia(Instances* instances, Profiles* profiles, Notifications* notifications);

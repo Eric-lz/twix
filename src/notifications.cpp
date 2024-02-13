@@ -9,11 +9,13 @@
 
 using namespace std;
 
+// Inicializa a classe Notifications
 Notifications::Notifications(){
   // Inicializa id em zero
   notif_id = 0;
 }
 
+// Cria uma nova notificação e insere na lista de notificações
 void Notifications::newMessage(unique_ptr<Packet> packet, set<string> followers){
   // Cria nova notificação
   Notification notif;
@@ -27,14 +29,6 @@ void Notifications::newMessage(unique_ptr<Packet> packet, set<string> followers)
   // Adiciona na lista de notificacoes
   notifications.push_back(notif);
 
-  // Adiciona na lista de notificacoes pendentes uma mensagem para cada seguidor
-  /*notif.id followers
-    0     @doze
-    0     @onze --OFFLINE
-    0     @treze
-    1     @doze
-  */
-
  //TODO: validar se o usuario que postou deve visualizar tambem a notificacao que ele mesmo postou
   for(string follower : followers)
     pending_notifs.insert(pair<string, unsigned> (follower, notif.id));
@@ -44,21 +38,24 @@ void Notifications::newMessage(unique_ptr<Packet> packet, set<string> followers)
   cout << notif.message << endl;
 }
 
+// Retorna lista de notificações pendentes
 std::multimap<std::string, unsigned int> Notifications::getPendingNotifs(){
   return pending_notifs;
 }
 
+// Retorna verdadeiro se lista de notificações pendentes está vazia
+// Falso caso contrário
 bool Notifications::isEmpty(){
   return pending_notifs.empty();
 }
 
+// Retorna notificação com ID fornecido
 Notification Notifications::getNotifByID(unsigned int notif_id){
   //TEST: tratar excecao caso notif_id nao exista
   return notifications.at(notif_id);
 }
 
+// Remove notificação da lista de notificações pendentes
 void Notifications::deleteNotif(multimap<string, unsigned int>::iterator it){
-  // pending_notifs.erase(it);
-  //TODO: alterar para apagar somente a notificacao do perfil que esta lendo
   pending_notifs.erase(it->first);
 }

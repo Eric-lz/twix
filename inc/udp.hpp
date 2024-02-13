@@ -22,7 +22,7 @@ enum PacketType{
   FOLLOW,
   UNFOLLOW,
   SEND,
-  LOGOUT,//TODO: ainda n implementado, CLIENTE deve enviar um sinal que uma sessao foi encerrada para o servidor
+  LOGOUT,
   UNKNOWN
 };
 

@@ -5,8 +5,7 @@
 #include <map>
 #include <vector>
 
-//ainda nao foi utilizada no projeto, provavelmente sera utilizada
-//usado para gerenciar as instancias do cliente que no maximo deve ter 2
+// Classe usada para gerenciar as instancias (ou sessoes) dos clients
 class Instances{
 private: 
   std::map<std::string, struct sockaddr_in> instancesMap;
@@ -20,7 +19,6 @@ public:
   void closeInstance(std::string profile, struct sockaddr_in cliaddr);
   
   // Retorna a porta de um perfil
-  //TODO como resolver se o perfil tem mais de uma instancia?
   struct sockaddr_in getPort(std::string profile);
 
   // Adiciona uma instancia na lista de keep alive
@@ -28,7 +26,6 @@ public:
 
   // Remove da lista de instancias aquelas que não estão em keepAliveMap
   void checkAlive();
-
 
   std::map<std::string, struct sockaddr_in> getInstances();
 };

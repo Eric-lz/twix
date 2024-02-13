@@ -23,7 +23,6 @@ int main() {
   Profiles* profiles = new Profiles;  /*Perfil e seus seguidores*/
   // Notifications
   Notifications* notifications = new Notifications; /*Notificacoes | quem enviou | uid | mensagem |  */
-  /* TODO: Implementar logica de notificacoes a serem enviadas 1)enviar de fato 2)marcar como enviada */
 
   // Open UDP socket to listen for logins
   UDP* udp = new UDP;
@@ -51,21 +50,15 @@ int main() {
     // Lista de seguidores
     set<string> followers;
 
-    auto inst = instances->getInstances();
-
     // Ação do servidor baseada no tipo de packet recebido do cliente
     switch(packet->type){
-    case PING: //TODO: esse metodo pode ser usado para validar conexao entre cliente e servidor, pq udp nao tem conceito de conexcao
+    case PING: // Usado para criar "conexão" entre cliente e servidor
       instances->setAlive(packet->profile);
       break;
 
     case LOGIN:
-      // Login
-      // Create new thread to handle messages
-      // (pass UDP socket and server memory)
       //TODO: Implementar verificacao de quantidade de sessoes por perfil, nao podemos deixar o mesmo perfil ter mais de dois acessos simultaneos, se tentar acessar em 3 maquina o cliente recebe negativa
       instances->newInstance(packet->payload, cliaddr);
-      inst = instances->getInstances();
       profiles->login(packet->payload);
       cout << packet->payload << " logged in from ";
       cout << inet_ntoa(cliaddr.sin_addr) << ':' << cliaddr.sin_port << endl;
@@ -82,13 +75,14 @@ int main() {
       break;
 
     case SEND:
-      // Adiciona mensagem na lista de notificacoes
+      // Adiciona mensagem na lista de notificacoes pendentes
       // Pega lista de seguidores do perfil que enviou a mensagem
-      followers = profiles->getFollowers(packet->profile); //pega seguidores do perfil que enviou a mensagem para enviar para eles na lista de notificacoes
-      notifications->newMessage(move(packet), followers);//prepara noticacao para enviar para seguidores
+      followers = profiles->getFollowers(packet->profile);  // pega seguidores do perfil que enviou a mensagem
+      notifications->newMessage(move(packet), followers);   // prepara noticacao para enviar para seguidores
       break;
 
     case LOGOUT:
+      // Fecha instancia
       instances->closeInstance(packet->profile, cliaddr);
       break;
 
@@ -103,7 +97,6 @@ int main() {
 
 
 //Thread so envia notificacoes
-//TODO: Refatorar funcao para enviar notificacoes
 void threadSession(UDP* udp, Instances* instances, Notifications* notifications){
   while(true){ //loop infinito
     if(!notifications->isEmpty()){ // se lista estiver vazia, nao faz nada
@@ -115,8 +108,8 @@ void threadSession(UDP* udp, Instances* instances, Notifications* notifications)
         /* Explicando esse loop:
           Um iterador chamado notif_it é inicializado no início do multimap (pending.begin()) e o loop continua
           até que este iterador alcance o final do multimap (pending.end()).
-          Dentro do corpo do loop (que não é mostrado no código fornecido), você teria acesso ao par chave-valor atual através do iterador notif_it.
-          Você pode acessar a chave com notif_it->first e o valor com notif_it->second.
+          Dentro do corpo do loop, temos acesso ao par chave-valor atual através do iterador notif_it.
+          Pode-se acessar a chave com notif_it->first e o valor com notif_it->second.
         */
 
         auto notifToSend = notifications->getNotifByID(notif_it->second);

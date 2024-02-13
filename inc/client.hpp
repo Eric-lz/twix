@@ -1,4 +1,4 @@
-#pragma once /*auxilia na implementação de include de arquivos com depencencia deste arquivo*/
+#pragma once
 
 #include <thread>
 #include <string> 
